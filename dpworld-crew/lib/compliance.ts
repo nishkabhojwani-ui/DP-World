@@ -199,7 +199,7 @@ async function extractWithLlm(text: string, fileName: string) {
       "HTTP-Referer": "https://dpworld-crew.vercel.app",
     },
     body: JSON.stringify({
-      model: "anthropic/claude-3-haiku",
+      model: "claude-3-5-sonnet",
       response_format: { type: "json_object" },
       messages: [
         {
@@ -543,7 +543,7 @@ async function verifyWithLlm(template: ComplianceTemplate, context: CrewComplian
       "HTTP-Referer": "https://dpworld-crew.vercel.app",
     },
     body: JSON.stringify({
-      model: "anthropic/claude-3-haiku",
+      model: "claude-3-5-sonnet",
       response_format: { type: "json_object" },
       messages: [
         {

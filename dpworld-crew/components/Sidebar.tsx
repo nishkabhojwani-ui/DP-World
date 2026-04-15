@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 
 const navItems = [
@@ -21,7 +22,7 @@ export default function Sidebar() {
 
       {/* Logo */}
       <div className="px-5 py-5" style={{ borderBottom: "1px solid #D1E0F0" }}>
-        <img src="/logo.png" alt="DP World" style={{ maxWidth: "100%", height: "auto" }} />
+        <Image src="/logo.png" alt="DP World" width={200} height={60} style={{ maxWidth: "100%", height: "auto" }} />
       </div>
 
       {/* Nav section label */}

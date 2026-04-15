@@ -49,7 +49,6 @@ function GanttChart({ contracts, crew, vesselId }: { contracts: Contract[]; crew
   return (
     <div style={{ overflowX: "auto" }}>
       <div style={{ minWidth: 900 }}>
-        {/* Month header */}
         <div style={{ display: "flex", paddingLeft: 152, marginBottom: 8, position: "relative", height: 20 }}>
           {months.map((m, i) => (
             <div key={i} style={{ position: "absolute", left: `calc(152px + ${m.pct}%)`, fontSize: "0.6875rem", color: "var(--muted)", fontWeight: 600, letterSpacing: "0.04em" }}>{m.label}</div>
@@ -82,7 +81,7 @@ function GanttChart({ contracts, crew, vesselId }: { contracts: Contract[]; crew
         <div style={{ display: "flex", gap: 16, paddingLeft: 152, marginTop: 12 }}>
           {[["var(--teal)", ">30d"], ["var(--amber)", "15-30d"], ["var(--red)", "<15d"], ["#94A3B8", "Ended"], ["var(--red)", "Today"]].map(([color, label], i) => (
             <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.6875rem", color: "var(--muted)" }}>
-              {i < 4 ? <div style={{ width: 12, height: 8, borderRadius: 2, background: color }} /> : <div style={{ width: 2, height: 12, background: color, opacity: 0.5 }} />}
+              {i < 4 ? <div style={{ width: 12, height: 8, borderRadius: 2, background: color as string }} /> : <div style={{ width: 2, height: 12, background: color as string, opacity: 0.5 }} />}
               {label}
             </div>
           ))}
@@ -100,6 +99,7 @@ function RotationContent() {
   const [crew, setCrew] = useState<CrewMember[]>([]);
   const [selectedVessel, setSelectedVessel] = useState("");
   const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<"gantt" | "coverage">("gantt");
 
   useEffect(() => {
     Promise.all([
@@ -117,6 +117,23 @@ function RotationContent() {
 
   const vessel = vessels.find(v => v.id === selectedVessel);
   const today = new Date();
+  const activeContracts = contracts.filter(c => c.vessel_id === selectedVessel && c.status === "active");
+  const upcomingRotations = activeContracts.filter(c => {
+    const daysLeft = Math.round((new Date(c.end_date).getTime() - today.getTime()) / 86400000);
+    return daysLeft <= 30 && daysLeft > 0;
+  }).sort((a, b) => new Date(a.end_date).getTime() - new Date(b.end_date).getTime());
+
+  const criticalGaps = activeContracts.filter(c => {
+    const daysLeft = Math.round((new Date(c.end_date).getTime() - today.getTime()) / 86400000);
+    return daysLeft < 7;
+  });
+
+  const crewUtilization = crew.length > 0 ? Math.round((activeContracts.length / crew.length) * 100) : 0;
+
+  const rankCoverage: Record<string, number> = {};
+  RANK_ORDER.forEach(rank => {
+    rankCoverage[rank] = activeContracts.filter(c => c.rank_on_vessel === rank).length;
+  });
 
   return (
     <div className="page-wrapper">
@@ -125,60 +142,223 @@ function RotationContent() {
           <div>
             <p className="section-label mb-1">Planning</p>
             <h1 className="page-title">Crew Rotation Planner</h1>
-            <p className="page-subtitle">6-month Gantt timeline — 30 days past to 5 months ahead</p>
+            <p className="page-subtitle">6-month timeline with coverage analysis and alerts</p>
           </div>
           <Link href="/crew-changes" className="btn btn-danger">+ Create Crew Change</Link>
         </div>
       </div>
 
+      {/* KPI Cards */}
+      <div className="grid grid-cols-5 gap-4 mb-6">
+        <div className="bg-white rounded-lg shadow-sm border border-[var(--border)] p-4">
+          <div className="text-xs text-[var(--muted)] font-medium uppercase tracking-wide">Active Crew</div>
+          <div className="text-3xl font-bold text-[var(--navy)] mt-2">{activeContracts.length}</div>
+          <div className="text-xs text-[var(--muted)] mt-3">on board</div>
+        </div>
+        <div className="bg-white rounded-lg shadow-sm border border-[var(--border)] p-4">
+          <div className="text-xs text-[var(--muted)] font-medium uppercase tracking-wide">Crew Utilization</div>
+          <div className="text-3xl font-bold text-[var(--teal)] mt-2">{crewUtilization}%</div>
+          <div className="text-xs text-[var(--muted)] mt-3">pool usage</div>
+        </div>
+        <div className="bg-white rounded-lg shadow-sm border border-[var(--border)] p-4">
+          <div className="text-xs text-[var(--muted)] font-medium uppercase tracking-wide">Upcoming Rotations</div>
+          <div className="text-3xl font-bold text-[var(--amber)] mt-2">{upcomingRotations.length}</div>
+          <div className="text-xs text-[var(--muted)] mt-3">next 30 days</div>
+        </div>
+        <div className="bg-white rounded-lg shadow-sm border border-[var(--border)] p-4">
+          <div className="text-xs text-[var(--muted)] font-medium uppercase tracking-wide">Critical Gaps</div>
+          <div className={`text-3xl font-bold mt-2 ${criticalGaps.length > 0 ? "text-red-600" : "text-teal-600"}`}>{criticalGaps.length}</div>
+          <div className="text-xs text-[var(--muted)] mt-3">expiring &lt; 7d</div>
+        </div>
+        <div className="bg-white rounded-lg shadow-sm border border-[var(--border)] p-4">
+          <div className="text-xs text-[var(--muted)] font-medium uppercase tracking-wide">Avg Duration</div>
+          <div className="text-3xl font-bold text-[var(--navy)] mt-2">
+            {activeContracts.length > 0
+              ? Math.round(activeContracts.reduce((sum, c) => sum + (new Date(c.end_date).getTime() - new Date(c.start_date).getTime()) / 86400000, 0) / activeContracts.length)
+              : 0}d
+          </div>
+          <div className="text-xs text-[var(--muted)] mt-3">per rotation</div>
+        </div>
+      </div>
+
+      {/* Critical Alert Banner */}
+      {criticalGaps.length > 0 && (
+        <div className="mb-5 p-4 bg-red-50 border border-red-200 rounded-xl">
+          <div className="font-semibold text-red-700 mb-2">Critical Crew Change Required</div>
+          <div className="text-sm text-red-600 space-y-1">
+            {criticalGaps.map((c, i) => {
+              const crewMember = crew.find(cm => cm.id === c.crew_id);
+              const days = Math.round((new Date(c.end_date).getTime() - today.getTime()) / 86400000);
+              return <div key={i}>{crewMember?.full_name} ({c.rank_on_vessel}) — sign-off in {days}d</div>;
+            })}
+          </div>
+        </div>
+      )}
+
       {/* Vessel Selector */}
       <div className="card mb-5">
-        <div className="card-body flex items-center gap-4" style={{ padding: "0.875rem 1.25rem" }}>
-          <label className="section-label">Vessel</label>
-          <select value={selectedVessel} onChange={e => setSelectedVessel(e.target.value)} className="input" style={{ minWidth: 240 }}>
-            {vessels.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
-          </select>
-          {vessel && (
-            <span style={{ fontSize: "0.8125rem", color: "var(--muted)" }}>
-              {contracts.filter(c => c.vessel_id === selectedVessel && c.status === "active").length} active contracts
-            </span>
-          )}
+        <div className="card-body flex items-center justify-between p-4">
+          <div className="flex items-center gap-4">
+            <label className="section-label">Select Vessel</label>
+            <select value={selectedVessel} onChange={e => setSelectedVessel(e.target.value)} className="input" style={{ minWidth: 240 }}>
+              {vessels.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
+            </select>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={() => setViewMode("gantt")}
+              className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${viewMode === "gantt" ? "bg-[var(--navy)] text-white" : "bg-[var(--light)] text-[var(--navy)]"}`}>
+              Timeline
+            </button>
+            <button onClick={() => setViewMode("coverage")}
+              className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${viewMode === "coverage" ? "bg-[var(--navy)] text-white" : "bg-[var(--light)] text-[var(--navy)]"}`}>
+              Coverage Matrix
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Gantt */}
-      <div className="card mb-5">
-        <div className="card-header">
-          <div><p className="section-label">Timeline</p><h2 className="card-title mt-0.5">{vessel?.name || "Select a vessel"}</h2></div>
+      {/* Gantt Chart View */}
+      {viewMode === "gantt" && (
+        <div className="card mb-5">
+          <div className="card-header">
+            <div><p className="section-label">Timeline</p><h2 className="card-title mt-0.5">{vessel?.name || "Select a vessel"}</h2></div>
+          </div>
+          <div className="card-body">
+            {selectedVessel && <GanttChart contracts={contracts} crew={crew} vesselId={selectedVessel} />}
+          </div>
         </div>
-        <div className="card-body">
-          {selectedVessel && <GanttChart contracts={contracts} crew={crew} vesselId={selectedVessel} />}
-        </div>
-      </div>
+      )}
 
-      {/* Contract Table */}
+      {/* Coverage Matrix View */}
+      {viewMode === "coverage" && (
+        <div className="card mb-5">
+          <div className="card-header">
+            <p className="section-label">Coverage</p>
+            <h2 className="card-title mt-0.5">Rank Coverage — {vessel?.name}</h2>
+          </div>
+          <div className="card-body space-y-3">
+            {RANK_ORDER.map(rank => {
+              const count = rankCoverage[rank] || 0;
+              const isRequired = ["Master","Chief Officer","Chief Engineer"].includes(rank);
+              const target = isRequired ? 3 : 2;
+              const pct = Math.min(100, (count / target) * 100);
+              const barColor = count >= target - 1 ? "var(--teal)" : count >= 1 ? "var(--amber)" : "#D1D5DB";
+              return (
+                <div key={rank} className="flex items-center gap-3">
+                  <div className="w-32 text-sm font-medium text-[var(--navy)]">{rank}{isRequired ? " *" : ""}</div>
+                  <div className="flex-1 flex items-center gap-2">
+                    <div className="flex-1 h-8 bg-[var(--light)] rounded flex items-center px-2 relative">
+                      <div className="h-6 rounded flex items-center justify-center text-xs font-bold text-white transition-all"
+                        style={{ width: `${pct}%`, background: barColor }}>
+                        {count > 0 && count}
+                      </div>
+                    </div>
+                    <span className="w-10 text-right font-bold text-[var(--navy)]">{count}/{target}</span>
+                    <span className={`text-xs font-medium px-2 py-1 rounded ${count >= target - 1 ? "bg-teal-100 text-teal-700" : "bg-red-100 text-red-700"}`}>
+                      {count >= target - 1 ? "Staffed" : "Gap"}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+            <div className="text-xs text-[var(--muted)] mt-4 pt-4 border-t border-[var(--border)]">* Required ranks need minimum 2 crew members on board at all times</div>
+          </div>
+        </div>
+      )}
+
+      {/* Upcoming Rotations Table */}
+      {upcomingRotations.length > 0 && (
+        <div className="card mb-5">
+          <div className="card-header">
+            <p className="section-label">Next 30 Days</p>
+            <h2 className="card-title mt-0.5">Upcoming Crew Changes</h2>
+          </div>
+          <div style={{ overflowX: "auto" }}>
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Crew Member</th>
+                  <th>Rank</th>
+                  <th>Sign-off Date</th>
+                  <th>Days Left</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {upcomingRotations.map(c => {
+                  const crewMember = crew.find(cm => cm.id === c.crew_id);
+                  const days = Math.round((new Date(c.end_date).getTime() - today.getTime()) / 86400000);
+                  return (
+                    <tr key={c.id} className={days < 7 ? "bg-red-50" : ""}>
+                      <td><Link href={`/crew-pool/${c.crew_id}`} className="font-semibold hover:underline" style={{ color: "var(--navy)" }}>{crewMember?.full_name || "—"}</Link></td>
+                      <td className="td-primary">{c.rank_on_vessel}</td>
+                      <td>{c.end_date}</td>
+                      <td><span className="font-bold" style={{ color: blockColor(days) }}>{days}d</span></td>
+                      <td>
+                        <span className={`px-2 py-1 rounded text-xs font-medium ${days < 7 ? "bg-red-100 text-red-700" : days < 14 ? "bg-amber-100 text-amber-700" : "bg-teal-100 text-teal-700"}`}>
+                          {days < 7 ? "Critical" : days < 14 ? "Urgent" : "Planned"}
+                        </span>
+                      </td>
+                      <td>
+                        <Link href="/crew-changes" className="text-xs font-medium text-[var(--navy)] hover:underline">Schedule</Link>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Active Contracts Table */}
       <div className="card">
-        <div className="card-header"><div><p className="section-label">Active Contracts</p><h2 className="card-title mt-0.5">{vessel?.name}</h2></div></div>
+        <div className="card-header">
+          <div>
+            <p className="section-label">Current</p>
+            <h2 className="card-title mt-0.5">Active Contracts — {vessel?.name}</h2>
+          </div>
+        </div>
         <div style={{ overflowX: "auto" }}>
           <table className="data-table">
-            <thead><tr><th>Crew Member</th><th>Rank</th><th>Start</th><th>Sign-off</th><th>Rotation</th><th>Days Left</th></tr></thead>
+            <thead>
+              <tr>
+                <th>Crew Member</th>
+                <th>Rank</th>
+                <th>Joined</th>
+                <th>Sign-off</th>
+                <th>Duration</th>
+                <th>Rotation</th>
+                <th>Days Left</th>
+              </tr>
+            </thead>
             <tbody>
-              {contracts.filter(c => c.vessel_id === selectedVessel && c.status === "active").map(c => {
+              {activeContracts.map(c => {
                 const crewMember = crew.find(cm => cm.id === c.crew_id);
                 const days = Math.round((new Date(c.end_date).getTime() - today.getTime()) / 86400000);
+                const duration = Math.round((new Date(c.end_date).getTime() - new Date(c.start_date).getTime()) / 86400000);
                 return (
-                  <tr key={c.id}>
+                  <tr key={c.id} className={days < 7 ? "bg-red-50 border-l-4 border-red-500" : ""}>
                     <td><Link href={`/crew-pool/${c.crew_id}`} className="font-semibold hover:underline" style={{ color: "var(--navy)" }}>{crewMember?.full_name || "—"}</Link></td>
-                    <td className="td-primary">{c.rank_on_vessel}</td>
-                    <td>{c.start_date}</td>
-                    <td>{c.end_date}</td>
-                    <td><span className="badge badge-navy">{c.rotation_type}</span></td>
-                    <td><span className="font-black" style={{ color: blockColor(days) }}>{days}d</span></td>
+                    <td className="td-primary font-medium">{c.rank_on_vessel}</td>
+                    <td className="text-[var(--muted)]">{c.start_date}</td>
+                    <td className="font-medium">{c.end_date}</td>
+                    <td className="text-[var(--muted)]">{duration}d</td>
+                    <td><span className="badge badge-navy text-xs">{c.rotation_type}</span></td>
+                    <td>
+                      <span className="font-bold text-sm" style={{ color: blockColor(days) }}>
+                        {days}d
+                      </span>
+                    </td>
                   </tr>
                 );
               })}
             </tbody>
           </table>
+          {activeContracts.length === 0 && (
+            <div className="p-8 text-center text-[var(--muted)]">No active contracts for this vessel</div>
+          )}
         </div>
       </div>
     </div>

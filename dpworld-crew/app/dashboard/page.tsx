@@ -30,7 +30,10 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/dashboard").then(r => r.json()).then(d => { setData(d); setLoading(false); });
+    fetch("/api/dashboard")
+      .then(r => r.json())
+      .then(d => { setData(d); setLoading(false); })
+      .catch(err => { console.error("Failed to load dashboard:", err); setLoading(false); });
   }, []);
 
   if (loading) return (
@@ -42,7 +45,16 @@ export default function DashboardPage() {
     </div>
   );
 
-  const { kpis, expiredOnboard, changesThisWeek, fleetStatus } = data!;
+  if (!data) return (
+    <div className="flex items-center justify-center h-screen">
+      <div className="text-center">
+        <div style={{ color: "var(--navy)", fontSize: "1rem", fontWeight: "bold" }}>Failed to load dashboard</div>
+        <div style={{ color: "var(--muted)", fontSize: "0.875rem", marginTop: "0.5rem" }}>Please refresh the page or try again later</div>
+      </div>
+    </div>
+  );
+
+  const { kpis, expiredOnboard, changesThisWeek, fleetStatus } = data;
 
   return (
     <div className="page-wrapper">

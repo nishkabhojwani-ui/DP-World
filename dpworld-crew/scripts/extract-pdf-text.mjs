@@ -9,7 +9,19 @@ if (!filePath) {
 }
 
 try {
-  const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  let pdfjs;
+  try {
+    pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+  } catch (importError) {
+    // Fallback: try alternative import paths for Lambda environments
+    try {
+      pdfjs = await import("/opt/nodejs/node_modules/pdfjs-dist/legacy/build/pdf.mjs");
+    } catch {
+      // Last resort: try relative to node_modules
+      pdfjs = await import("../node_modules/pdfjs-dist/legacy/build/pdf.mjs");
+    }
+  }
+
   const data = new Uint8Array(fs.readFileSync(filePath));
   const loadingTask = pdfjs.getDocument({
     data,
