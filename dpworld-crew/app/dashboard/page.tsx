@@ -103,7 +103,10 @@ export default function DashboardPage() {
       {expiredOnboard.length > 0 && (
         <div className="alert-banner error mb-6">
           <div className="flex items-center justify-between mb-2">
-            <span className="font-bold text-sm">Expired Certificates — Active Crew</span>
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-sm">Expired Certificates — Active Crew</span>
+              <AIBadge type="flagged" size="sm" />
+            </div>
             <span className="badge badge-red">{expiredOnboard.length} alerts</span>
           </div>
           <div className="grid grid-cols-2 gap-1">
@@ -117,6 +120,27 @@ export default function DashboardPage() {
           {expiredOnboard.length > 6 && (
             <div className="text-xs mt-1" style={{ color: "#C53030", opacity: 0.7 }}>+{expiredOnboard.length - 6} more</div>
           )}
+        </div>
+      )}
+
+      {/* Critical Crew Changes Alert */}
+      {changesThisWeek.filter((c: any) => c.status === "planned" || c.status === "docs_check").length > 0 && (
+        <div className="alert-banner error mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-sm">Critical Crew Change Required</span>
+              <AIBadge type="detected" size="sm" />
+            </div>
+            <span className="badge badge-red">{changesThisWeek.filter((c: any) => c.status === "planned" || c.status === "docs_check").length} pending</span>
+          </div>
+          <div className="space-y-1">
+            {changesThisWeek.filter((c: any) => c.status === "planned" || c.status === "docs_check").slice(0, 5).map((cc, i) => (
+              <div key={i} className="text-xs flex items-center gap-2" style={{ color: "#C53030" }}>
+                <span className="w-1 h-1 rounded-full bg-red-500 flex-shrink-0" />
+                <strong>{String((cc as any).incoming_crew_id ? "Incoming crew" : "Outgoing crew")}</strong> — {String((cc as any).change_port)} on {String((cc as any).planned_date)}
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
