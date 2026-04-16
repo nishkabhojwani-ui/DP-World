@@ -199,7 +199,7 @@ async function extractWithLlm(text: string, fileName: string) {
       "HTTP-Referer": "https://dpworld-crew.vercel.app",
     },
     body: JSON.stringify({
-      model: "claude-3-5-sonnet",
+      model: "anthropic/claude-sonnet-4.6",
       response_format: { type: "json_object" },
       messages: [
         {
@@ -524,14 +524,28 @@ async function verifyWithLlm(template: ComplianceTemplate, context: CrewComplian
       rank: context.crew.rank,
       nationality: context.crew.nationality,
       status: context.crew.status,
-      current_vessel_id: context.crew.current_vessel_id,
       passport_expiry: context.crew.passport_expiry,
       seaman_book_expiry: context.crew.seaman_book_expiry,
     },
-    vessel: context.vessel,
-    active_contract: context.activeContract,
-    certifications: context.certifications,
-    rest_logs: context.restLogs.slice(0, 60),
+    vessel: context.vessel ? { id: context.vessel.id, name: context.vessel.name } : null,
+    active_contract: context.activeContract ? {
+      id: context.activeContract.id,
+      status: context.activeContract.status,
+      start_date: context.activeContract.start_date,
+      end_date: context.activeContract.end_date,
+      sea_contract_signed: context.activeContract.sea_contract_signed,
+    } : null,
+    certifications: context.certifications.map(c => ({
+      cert_type: c.cert_type,
+      status: c.status,
+      expiry_date: c.expiry_date,
+    })),
+    rest_logs: context.restLogs.slice(0, 30).map(r => ({
+      log_date: r.log_date,
+      actual_work_hours: r.actual_work_hours,
+      rest_hours: r.rest_hours,
+      violation_flag: r.violation_flag,
+    })),
     checklist: template.items,
   };
 
@@ -543,7 +557,7 @@ async function verifyWithLlm(template: ComplianceTemplate, context: CrewComplian
       "HTTP-Referer": "https://dpworld-crew.vercel.app",
     },
     body: JSON.stringify({
-      model: "claude-3-5-sonnet",
+      model: "anthropic/claude-sonnet-4.6",
       response_format: { type: "json_object" },
       messages: [
         {
@@ -558,10 +572,17 @@ async function verifyWithLlm(template: ComplianceTemplate, context: CrewComplian
     }),
   });
 
-  if (!response.ok) return null;
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    console.error("OpenRouter API error:", { status: response.status, data: errorData });
+    return null;
+  }
   const data = await response.json();
   const content = data.choices?.[0]?.message?.content;
-  if (!content) return null;
+  if (!content) {
+    console.error("No content in OpenRouter response:", data);
+    return null;
+  }
 
   try {
     const parsed = JSON.parse(extractJsonObject(content));
@@ -579,7 +600,8 @@ async function verifyWithLlm(template: ComplianceTemplate, context: CrewComplian
         message: cleanText(String(result.message ?? "No explanation returned.")),
       } as ComplianceResultItem;
     });
-  } catch {
+  } catch (err) {
+    console.error("Error parsing OpenRouter response:", err);
     return null;
   }
 }

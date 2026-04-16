@@ -395,29 +395,33 @@ export default function ComplianceWorkflow() {
                 )}
                 {draftItems.map((item) => (
                   <div key={item.id} className="draft-item-card">
-                    <div className="grid grid-cols-[160px_1fr_auto_auto] gap-2 items-start">
-                      <input
-                        value={item.category}
-                        onChange={(event) => updateDraftItem(item.id, { category: event.target.value })}
-                        className="form-input"
-                        placeholder="Category"
-                      />
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-2 gap-3">
+                        <input
+                          value={item.category}
+                          onChange={(event) => updateDraftItem(item.id, { category: event.target.value })}
+                          className="form-input"
+                          placeholder="Category (e.g., Certifications, Medical, etc.)"
+                        />
+                        <div className="flex items-center gap-3">
+                          <label className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600">
+                            <input
+                              type="checkbox"
+                              checked={item.mandatory}
+                              onChange={(event) => updateDraftItem(item.id, { mandatory: event.target.checked })}
+                            />
+                            Mandatory
+                          </label>
+                          <button className="btn btn-ghost btn-sm" onClick={() => removeDraftItem(item.id)}>Remove</button>
+                        </div>
+                      </div>
                       <textarea
                         value={item.item}
                         onChange={(event) => updateDraftItem(item.id, { item: event.target.value })}
-                        className="form-textarea"
-                        rows={2}
-                        placeholder="Checklist item"
+                        className="form-textarea w-full"
+                        rows={3}
+                        placeholder="Checklist item - describe what needs to be verified"
                       />
-                      <label className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 pt-2">
-                        <input
-                          type="checkbox"
-                          checked={item.mandatory}
-                          onChange={(event) => updateDraftItem(item.id, { mandatory: event.target.checked })}
-                        />
-                        Mandatory
-                      </label>
-                      <button className="btn btn-ghost btn-sm" onClick={() => removeDraftItem(item.id)}>Remove</button>
                     </div>
                   </div>
                 ))}

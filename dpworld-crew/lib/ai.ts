@@ -87,7 +87,7 @@ export async function runComplianceCheck(crewId: string) {
       "HTTP-Referer": "https://dpworld-crew.vercel.app",
     },
     body: JSON.stringify({
-      model: "claude-3-5-sonnet",
+      model: "anthropic/claude-sonnet-4.6",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: `Perform a compliance audit for this seafarer:\n\n${JSON.stringify(payload, null, 2)}` },
