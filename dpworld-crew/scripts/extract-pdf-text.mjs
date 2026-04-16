@@ -11,14 +11,30 @@ if (!filePath) {
 try {
   let pdfjs;
   try {
+    // Try standard import first
     pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  } catch (importError) {
-    // Fallback: try alternative import paths for Lambda environments
+  } catch (err) {
+    // Fallback: try with .js extension for Node.js
     try {
-      pdfjs = await import("/opt/nodejs/node_modules/pdfjs-dist/legacy/build/pdf.mjs");
+      pdfjs = await import("pdfjs-dist/legacy/build/pdf.js");
     } catch {
-      // Last resort: try relative to node_modules
-      pdfjs = await import("../node_modules/pdfjs-dist/legacy/build/pdf.mjs");
+      // Last resort: use pdf-parse
+      const pdf = await import("pdf-parse/lib/pdf-parse.js");
+      const dataBuffer = fs.readFileSync(filePath);
+      const result = await pdf.default(dataBuffer);
+      const text = result.text
+        .split('\n')
+        .map(line => line.trim())
+        .filter(line => line.length > 0)
+        .join('\n')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      process.stdout.write(JSON.stringify({
+        source: pathToFileURL(filePath).toString(),
+        text: text,
+      }));
+      process.exit(0);
     }
   }
 
