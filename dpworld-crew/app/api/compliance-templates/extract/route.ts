@@ -20,15 +20,9 @@ async function fileToText(file: File) {
     await fs.writeFile(tmpPath, bytes);
     try {
       const scriptPath = path.join(process.cwd(), "scripts", "extract-pdf-text.mjs");
-      const { stdout, stderr } = await execFileAsync(process.execPath, [scriptPath, tmpPath], {
+      const { stdout } = await execFileAsync(process.execPath, [scriptPath, tmpPath], {
         maxBuffer: 10 * 1024 * 1024,
       });
-
-      // Check if PDF extraction is not supported
-      if (stderr && stderr.includes("PDF_NOT_SUPPORTED")) {
-        throw new Error("PDF extraction is not supported in this environment. Please upload a .txt or .md file instead, or copy the PDF text into a text file.");
-      }
-
       const parsed = JSON.parse(stdout) as { text?: string };
       return parsed.text ?? "";
     } finally {

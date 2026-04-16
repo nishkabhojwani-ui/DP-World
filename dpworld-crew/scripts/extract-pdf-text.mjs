@@ -1,5 +1,6 @@
 import fs from "fs";
 import { pathToFileURL } from "url";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 
 const filePath = process.argv[2];
 
@@ -9,46 +10,19 @@ if (!filePath) {
 }
 
 try {
-  const fileName = filePath.split('/').pop();
-  const fileExt = fileName.split('.').pop().toLowerCase();
-
-  // For non-PDF files, just read as text
-  if (fileExt !== 'pdf') {
-    const data = fs.readFileSync(filePath, 'utf-8');
-    process.stdout.write(JSON.stringify({
-      source: pathToFileURL(filePath).toString(),
-      text: data,
-    }));
-    process.exit(0);
-  }
-
-  // For PDF files, try to extract
-  let pdfjs;
-  try {
-    pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  } catch {
-    try {
-      pdfjs = await import("pdfjs-dist/legacy/build/pdf.js");
-    } catch {
-      // PDF libraries not available - return error message that will be displayed to user
-      console.error("PDF_NOT_SUPPORTED");
-      process.exit(1);
-    }
-  }
-
   const data = new Uint8Array(fs.readFileSync(filePath));
-  const loadingTask = pdfjs.getDocument({
+
+  const pdf = await pdfjsLib.getDocument({
     data,
     useWorkerFetch: false,
     isEvalSupported: false,
     useSystemFonts: true,
     disableFontFace: true,
-  });
+  }).promise;
 
-  const pdf = await loadingTask.promise;
   const pages = [];
 
-  for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+  for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
     const page = await pdf.getPage(pageNumber);
     const content = await page.getTextContent();
     const pageText = content.items
