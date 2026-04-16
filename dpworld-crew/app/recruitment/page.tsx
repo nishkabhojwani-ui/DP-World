@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import AIBadge from "@/components/AIBadge";
 
 interface Requisition { id: string; vessel_id: string; rank_required: string; required_cert_types: unknown; joining_port: string; joining_date: string; rotation_type: string; salary_band_usd_min: number; salary_band_usd_max: number; status: string; priority: string; raised_by: string; notes: string | null; }
 interface Candidate { id: string; requisition_id: string; full_name: string; rank: string; nationality: string; ai_match_score: number; pipeline_stage: string; date_of_birth: string; email: string; interview_notes: string | null; offer_accepted: string | null; rejection_reason: string | null; }
@@ -94,7 +95,7 @@ export default function RecruitmentPage() {
         <div className="bg-white rounded-lg shadow-sm border border-[var(--border)] p-4">
           <div className="flex items-center justify-between">
             <div className="text-xs text-[var(--muted)] font-medium uppercase tracking-wide">Avg AI Match</div>
-            <span className="badge badge-navy">Scored by AI</span>
+            <AIBadge type="scored" size="sm" />
           </div>
           <div className="text-3xl font-bold text-[var(--navy)] mt-2">{avgScore}%</div>
           <div className="text-xs text-[var(--muted)] mt-3">current pipeline</div>
@@ -235,7 +236,7 @@ export default function RecruitmentPage() {
                     <span className={`text-lg font-bold px-4 py-2 rounded-full ${selectedCandidate.ai_match_score >= 85 ? "bg-teal-100 text-teal-700" : selectedCandidate.ai_match_score >= 70 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}`}>
                       {selectedCandidate.ai_match_score}%
                     </span>
-                    <span className="badge badge-navy text-xs">Scored by AI</span>
+                    <AIBadge type="scored" size="sm" />
                   </div>
                   <button onClick={() => setSelectedCandidate(null)} className="text-[var(--muted)] hover:text-[var(--text)] text-xl font-bold">Close</button>
                 </div>
