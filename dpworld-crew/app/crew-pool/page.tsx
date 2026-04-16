@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import AIBadge from "@/components/AIBadge";
 
 interface CrewMember {
   id: string; full_name: string; rank: string; rank_category: string;
@@ -61,7 +62,11 @@ export default function CrewPoolPage() {
           <div>
             <p className="section-label mb-1">Seafarers</p>
             <h1 className="page-title">Crew Pool</h1>
-            <p className="page-subtitle">{filtered.length} of {crew.length} crew members</p>
+            <p className="page-subtitle">{filtered.length} of {crew.length} crew members • AI-powered readiness scoring & cert expiry predictions</p>
+            <div className="mt-2 flex gap-2">
+              <AIBadge type="analyzed" size="sm" />
+              <AIBadge type="flagged" size="sm" />
+            </div>
           </div>
         </div>
       </div>

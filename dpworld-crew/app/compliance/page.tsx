@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import ComplianceWorkflow from "@/components/ComplianceWorkflow";
+import AIBadge from "@/components/AIBadge";
 
 interface CrewMember { id: string; full_name: string; rank: string; status: string; current_vessel_id: string | null; }
 interface Cert { id: string; crew_id: string; cert_type: string; expiry_date: string; status: string; }
@@ -92,7 +93,12 @@ export default function CompliancePage() {
           <div>
             <p className="section-label mb-1">MLC 2006 / STCW</p>
             <h1 className="page-title">Compliance Center</h1>
-            <p className="page-subtitle">Real-time compliance monitoring for all vessels and crew</p>
+            <p className="page-subtitle">AI-powered monitoring: extraction, verification, PSC prep & natural language Q&A</p>
+            <div className="mt-2 flex gap-2 flex-wrap">
+              <AIBadge type="generated" size="sm" />
+              <AIBadge type="verified" size="sm" />
+              <AIBadge type="analyzed" size="sm" />
+            </div>
           </div>
         </div>
       </div>

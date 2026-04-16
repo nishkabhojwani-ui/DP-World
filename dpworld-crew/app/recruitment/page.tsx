@@ -63,7 +63,12 @@ export default function RecruitmentPage() {
           <div>
             <p className="section-label mb-1">Onboarding</p>
             <h1 className="page-title">Recruitment Pipeline</h1>
-            <p className="page-subtitle">Manage crew recruitment from requisition to joining</p>
+            <p className="page-subtitle">AI-powered: CV parsing, candidate ranking, interview question generation</p>
+            <div className="mt-2 flex gap-2">
+              <AIBadge type="generated" size="sm" />
+              <AIBadge type="scored" size="sm" />
+              <AIBadge type="analyzed" size="sm" />
+            </div>
           </div>
           <button onClick={() => { setShowWizard(true); setWizardStep(1); }}
             className="btn btn-danger">+ New Requisition</button>

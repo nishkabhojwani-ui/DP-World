@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import AIBadge from "@/components/AIBadge";
 
 interface KPIs { crewOnBoard: number; certAlerts: number; activeChanges: number; restViolations: number; }
 interface DashboardData {
@@ -204,19 +205,20 @@ export default function DashboardPage() {
           </div>
           <div className="card-body space-y-2">
             {[
-              { href: "/crew-changes", label: "Plan New Crew Change", sub: "Initiate rotation workflow", color: "var(--navy)" },
-              { href: "/crew-pool?status=available", label: "Search Available Crew", sub: "Browse by availability", color: "var(--teal)" },
-              { href: "/compliance", label: "Fleet Compliance Check", sub: "Cert matrix & rest hours", color: "var(--amber)" },
-              { href: "/recruitment", label: "Open Requisitions", sub: "View recruitment pipeline", color: "var(--red)" },
-            ].map(({ href, label, sub, color }) => (
+              { href: "/crew-changes", label: "Plan New Crew Change", sub: "Initiate rotation workflow", color: "var(--navy)", ai: false },
+              { href: "/crew-pool?status=available", label: "Search Available Crew", sub: "AI-powered readiness scoring & predictions", color: "var(--teal)", ai: true },
+              { href: "/compliance", label: "Fleet Compliance Check", sub: "AI health score & anomaly detection", color: "var(--amber)", ai: true },
+              { href: "/recruitment", label: "Open Requisitions", sub: "AI candidate matching & ranking", color: "var(--red)", ai: true },
+            ].map(({ href, label, sub, color, ai }) => (
               <Link key={href} href={href}
                 className="flex items-center gap-3 p-2.5 rounded-lg transition-colors hover:bg-[var(--bg)]"
               >
                 <div className="w-7 h-7 rounded flex-shrink-0" style={{ background: color, opacity: 0.9 }} />
-                <div>
+                <div className="flex-1">
                   <div className="font-semibold text-xs" style={{ color: "var(--navy)" }}>{label}</div>
                   <div className="text-xs" style={{ color: "var(--muted)" }}>{sub}</div>
                 </div>
+                {ai && <AIBadge type="generated" size="sm" />}
               </Link>
             ))}
           </div>
@@ -229,8 +231,12 @@ export default function DashboardPage() {
           <div>
             <p className="section-label">All Vessels</p>
             <h2 className="card-title mt-0.5">Fleet Status</h2>
+            <p className="text-xs" style={{ color: "var(--muted)", marginTop: "0.25rem" }}>Real-time AI health scores & anomaly detection</p>
           </div>
-          <Link href="/vessels" className="btn btn-ghost btn-sm">View vessels</Link>
+          <div className="flex gap-2 items-center">
+            <AIBadge type="analyzed" size="sm" />
+            <Link href="/vessels" className="btn btn-ghost btn-sm">View vessels</Link>
+          </div>
         </div>
         <div style={{ overflowX: "auto" }}>
           <table className="data-table">

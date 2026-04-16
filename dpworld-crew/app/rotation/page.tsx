@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import AIBadge from "@/components/AIBadge";
 
 interface Vessel { id: string; name: string; }
 interface Contract { id: string; crew_id: string; vessel_id: string; rank_on_vessel: string; start_date: string; end_date: string; rotation_type: string; status: string; }
@@ -142,7 +143,12 @@ function RotationContent() {
           <div>
             <p className="section-label mb-1">Planning</p>
             <h1 className="page-title">Crew Rotation Planner</h1>
-            <p className="page-subtitle">6-month timeline with coverage analysis and alerts</p>
+            <p className="page-subtitle">6-month AI-optimized timeline with gap prediction & rest hour forecasting</p>
+            <div className="mt-2 flex gap-2">
+              <AIBadge type="generated" size="sm" />
+              <AIBadge type="flagged" size="sm" />
+              <AIBadge type="detected" size="sm" />
+            </div>
           </div>
           <Link href="/crew-changes" className="btn btn-danger">+ Create Crew Change</Link>
         </div>
@@ -166,9 +172,12 @@ function RotationContent() {
           <div className="text-xs text-[var(--muted)] mt-3">next 30 days</div>
         </div>
         <div className="bg-white rounded-lg shadow-sm border border-[var(--border)] p-4">
-          <div className="text-xs text-[var(--muted)] font-medium uppercase tracking-wide">Critical Gaps</div>
+          <div className="flex items-center justify-between">
+            <div className="text-xs text-[var(--muted)] font-medium uppercase tracking-wide">Critical Gaps</div>
+            <AIBadge type="detected" size="sm" />
+          </div>
           <div className={`text-3xl font-bold mt-2 ${criticalGaps.length > 0 ? "text-red-600" : "text-teal-600"}`}>{criticalGaps.length}</div>
-          <div className="text-xs text-[var(--muted)] mt-3">expiring &lt; 7d</div>
+          <div className="text-xs text-[var(--muted)] mt-3">AI-predicted expiring &lt; 7d</div>
         </div>
         <div className="bg-white rounded-lg shadow-sm border border-[var(--border)] p-4">
           <div className="text-xs text-[var(--muted)] font-medium uppercase tracking-wide">Avg Duration</div>
