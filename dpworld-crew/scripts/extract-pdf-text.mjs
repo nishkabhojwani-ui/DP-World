@@ -9,32 +9,30 @@ if (!filePath) {
 }
 
 try {
+  const fileName = filePath.split('/').pop();
+  const fileExt = fileName.split('.').pop().toLowerCase();
+
+  // For non-PDF files, just read as text
+  if (fileExt !== 'pdf') {
+    const data = fs.readFileSync(filePath, 'utf-8');
+    process.stdout.write(JSON.stringify({
+      source: pathToFileURL(filePath).toString(),
+      text: data,
+    }));
+    process.exit(0);
+  }
+
+  // For PDF files, try to extract
   let pdfjs;
   try {
-    // Try standard import first
     pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-  } catch (err) {
-    // Fallback: try with .js extension for Node.js
+  } catch {
     try {
       pdfjs = await import("pdfjs-dist/legacy/build/pdf.js");
     } catch {
-      // Last resort: use pdf-parse
-      const pdf = await import("pdf-parse/lib/pdf-parse.js");
-      const dataBuffer = fs.readFileSync(filePath);
-      const result = await pdf.default(dataBuffer);
-      const text = result.text
-        .split('\n')
-        .map(line => line.trim())
-        .filter(line => line.length > 0)
-        .join('\n')
-        .replace(/\s+/g, ' ')
-        .trim();
-
-      process.stdout.write(JSON.stringify({
-        source: pathToFileURL(filePath).toString(),
-        text: text,
-      }));
-      process.exit(0);
+      // PDF libraries not available - return error message that will be displayed to user
+      console.error("PDF_NOT_SUPPORTED");
+      process.exit(1);
     }
   }
 
@@ -46,6 +44,7 @@ try {
     useSystemFonts: true,
     disableFontFace: true,
   });
+
   const pdf = await loadingTask.promise;
   const pages = [];
 
