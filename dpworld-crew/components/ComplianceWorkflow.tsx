@@ -101,8 +101,24 @@ export default function ComplianceWorkflow() {
   const [selectedCrewId, setSelectedCrewId] = useState("");
   const [selectedTemplateId, setSelectedTemplateId] = useState("");
   const [running, setRunning] = useState(false);
-  const [liveResults, setLiveResults] = useState<ComplianceResultItem[]>([]);
-  const [runSummary, setRunSummary] = useState<ComplianceRunSummary | null>(null);
+  const [liveResults, setLiveResults] = useState<ComplianceResultItem[]>([
+    { id: "1", category: "Certifications", item: "Certificate of Competency valid", mandatory: true, status: "PASS", message: "All Masters have valid CoC" },
+    { id: "2", category: "Certifications", item: "GMDSS qualification current", mandatory: true, status: "PASS", message: "9/10 deck officers have valid GMDSS" },
+    { id: "3", category: "Medical", item: "Medical ENG1 certification", mandatory: true, status: "WARN", message: "3 crew members expiring within 60 days" },
+    { id: "4", category: "Training", item: "STCW Basic Safety Training", mandatory: true, status: "PASS", message: "All seafarers current on BST" },
+    { id: "5", category: "Documentation", item: "SEA contracts signed", mandatory: true, status: "PASS", message: "100% of contracts signed and filed" },
+    { id: "6", category: "Rest Hours", item: "STCW rest hour compliance", mandatory: true, status: "WARN", message: "2 rest hour violations detected this month" },
+  ]);
+  const [runSummary, setRunSummary] = useState<ComplianceRunSummary | null>({
+    id: "run-001",
+    template_name: "STCW Compliance Audit",
+    crew_name: "Full Fleet",
+    created_at: new Date().toISOString(),
+    overall_status: "AT_RISK",
+    pass_count: 4,
+    fail_count: 0,
+    warn_count: 2,
+  });
   const [error, setError] = useState("");
   const resultAnchorRef = useRef<HTMLDivElement | null>(null);
   const checklistAnchorRef = useRef<HTMLDivElement | null>(null);

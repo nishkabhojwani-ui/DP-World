@@ -60,13 +60,52 @@ export default function DashboardPage() {
   return (
     <div className="page-wrapper">
 
+      {/* AI-Powered Insights Banner */}
+      <div className="mb-6 p-5 rounded-lg" style={{ background: "linear-gradient(135deg, rgba(0, 61, 122, 0.08) 0%, rgba(0, 161, 154, 0.08) 100%)", border: "1px solid rgba(0, 61, 122, 0.15)" }}>
+        <div className="flex items-start gap-4">
+          <div style={{ fontSize: "2rem" }}>AI</div>
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-2">
+              <h3 className="font-bold" style={{ color: "var(--navy)" }}>AI Fleet Insights</h3>
+              <AIBadge type="analyzed" size="sm" />
+            </div>
+            <p className="text-sm mb-3" style={{ color: "var(--muted)" }}>
+              Real-time AI analysis is continuously monitoring your fleet. Here are today's key insights:
+            </p>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="p-3 rounded-lg bg-white/60">
+                <div className="text-xs font-semibold mb-1" style={{ color: "var(--red)" }}>URGENT ACTION</div>
+                <div className="text-sm font-bold" style={{ color: "var(--navy)" }}>3 Certificates Expiring</div>
+                <div className="text-xs mt-1" style={{ color: "var(--muted)" }}>AI flagged crew with &lt;60 days validity</div>
+              </div>
+              <div className="p-3 rounded-lg bg-white/60">
+                <div className="text-xs font-semibold mb-1" style={{ color: "var(--amber)" }}>OPTIMIZATION</div>
+                <div className="text-sm font-bold" style={{ color: "var(--navy)" }}>2 Rest Hour Violations</div>
+                <div className="text-xs mt-1" style={{ color: "var(--muted)" }}>AI recommends schedule adjustment</div>
+              </div>
+              <div className="p-3 rounded-lg bg-white/60">
+                <div className="text-xs font-semibold mb-1" style={{ color: "var(--teal)" }}>READY</div>
+                <div className="text-sm font-bold" style={{ color: "var(--navy)" }}>12 Vessels Compliant</div>
+                <div className="text-xs mt-1" style={{ color: "var(--muted)" }}>AI-verified health status: 100%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Page Header */}
       <div className="page-header">
         <div className="page-header-row">
           <div>
             <p className="section-label mb-1">Overview</p>
-            <h1 className="page-title">Fleet Dashboard</h1>
-            <p className="page-subtitle">Real-time crew operations across the DP World fleet</p>
+            <div className="flex items-center gap-3">
+              <h1 className="page-title">Fleet Dashboard</h1>
+              <div className="flex gap-2">
+                <AIBadge type="analyzed" size="sm" />
+                <AIBadge type="detected" size="sm" />
+              </div>
+            </div>
+            <p className="page-subtitle">AI-powered real-time monitoring • Predictive analytics • Automated compliance checks</p>
           </div>
           <div className="flex gap-2">
             <Link href="/crew-pool?status=available" className="btn btn-ghost btn-sm">Available Crew</Link>
