@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Ensure dependencies are available in serverless environment
-  serverComponentsExternalPackages: ['pdfjs-dist', 'exceljs'],
+  // Keep pdfjs-dist as external to avoid bundling issues
   webpack: (config, { isServer }) => {
     if (isServer) {
       config.externals = [...(config.externals || []), 'pdfjs-dist'];
