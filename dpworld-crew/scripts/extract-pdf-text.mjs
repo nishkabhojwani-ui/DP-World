@@ -1,6 +1,6 @@
 import fs from "fs";
 import { pathToFileURL } from "url";
-import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
+import pdfParse from "pdf-parse/lib/pdf-parse.js";
 
 const filePath = process.argv[2];
 
@@ -10,35 +10,25 @@ if (!filePath) {
 }
 
 try {
-  const data = new Uint8Array(fs.readFileSync(filePath));
+  const fileBuffer = fs.readFileSync(filePath);
 
-  const pdf = await pdfjsLib.getDocument({
-    data,
-    useWorkerFetch: false,
-    isEvalSupported: false,
-    useSystemFonts: true,
-    disableFontFace: true,
-  }).promise;
-
-  const pages = [];
-
-  for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber++) {
-    const page = await pdf.getPage(pageNumber);
-    const content = await page.getTextContent();
-    const pageText = content.items
-      .map((item) => ("str" in item ? item.str : ""))
-      .join(" ")
-      .replace(/\s+/g, " ")
+  pdfParse(fileBuffer).then(data => {
+    const text = data.text
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line)
+      .join('\n')
+      .replace(/\s+/g, ' ')
       .trim();
-    if (pageText) {
-      pages.push(pageText);
-    }
-  }
 
-  process.stdout.write(JSON.stringify({
-    source: pathToFileURL(filePath).toString(),
-    text: pages.join("\n\n"),
-  }));
+    process.stdout.write(JSON.stringify({
+      source: pathToFileURL(filePath).toString(),
+      text: text,
+    }));
+  }).catch(err => {
+    console.error(err instanceof Error ? err.message : String(err));
+    process.exit(1);
+  });
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));
   process.exit(1);
