@@ -92,7 +92,10 @@ export default function RecruitmentPage() {
           <div className="text-xs text-[var(--muted)] mt-3">{screened > 0 ? Math.round((interviewed/screened)*100) : 0}% progress</div>
         </div>
         <div className="bg-white rounded-lg shadow-sm border border-[var(--border)] p-4">
-          <div className="text-xs text-[var(--muted)] font-medium uppercase tracking-wide">Avg AI Match</div>
+          <div className="flex items-center justify-between">
+            <div className="text-xs text-[var(--muted)] font-medium uppercase tracking-wide">Avg AI Match</div>
+            <span className="badge badge-navy">Scored by AI</span>
+          </div>
           <div className="text-3xl font-bold text-[var(--navy)] mt-2">{avgScore}%</div>
           <div className="text-xs text-[var(--muted)] mt-3">current pipeline</div>
         </div>
@@ -228,9 +231,12 @@ export default function RecruitmentPage() {
                   <div className="text-sm text-[var(--muted)]">{selectedCandidate.rank} • {selectedCandidate.nationality} • DOB: {selectedCandidate.date_of_birth}</div>
                 </div>
                 <div className="flex gap-2 items-center">
-                  <span className={`text-lg font-bold px-4 py-2 rounded-full ${selectedCandidate.ai_match_score >= 85 ? "bg-teal-100 text-teal-700" : selectedCandidate.ai_match_score >= 70 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}`}>
-                    {selectedCandidate.ai_match_score}%
-                  </span>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className={`text-lg font-bold px-4 py-2 rounded-full ${selectedCandidate.ai_match_score >= 85 ? "bg-teal-100 text-teal-700" : selectedCandidate.ai_match_score >= 70 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}`}>
+                      {selectedCandidate.ai_match_score}%
+                    </span>
+                    <span className="badge badge-navy text-xs">Scored by AI</span>
+                  </div>
                   <button onClick={() => setSelectedCandidate(null)} className="text-[var(--muted)] hover:text-[var(--text)] text-xl font-bold">Close</button>
                 </div>
               </div>
