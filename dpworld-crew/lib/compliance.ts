@@ -296,13 +296,19 @@ export async function createComplianceTemplate(input: Omit<ComplianceTemplate, "
 
 export async function listComplianceRuns() {
   if (isSupabaseConfigured()) {
-    const supabase = getSupabaseAdminClient();
-    const { data, error } = await supabase
-      .from("compliance_runs")
-      .select("*")
-      .order("created_at", { ascending: false });
-    if (error) throw error;
-    return (data ?? []) as ComplianceRun[];
+    try {
+      const supabase = getSupabaseAdminClient();
+      const { data, error } = await supabase
+        .from("compliance_runs")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      if (data && data.length > 0) {
+        return data as ComplianceRun[];
+      }
+    } catch (err) {
+      console.warn("Failed to read compliance runs from Supabase, falling back to JSON:", err);
+    }
   }
 
   const runs = await readJsonArray<ComplianceRun>(RUNS_FILE);

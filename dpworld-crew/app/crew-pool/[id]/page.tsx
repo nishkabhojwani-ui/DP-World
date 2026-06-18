@@ -70,7 +70,7 @@ export default function CrewProfilePage() {
   if (loading) return <div className="flex items-center justify-center h-screen"><div className="w-8 h-8 border-2 border-[var(--navy)] border-t-transparent rounded-full animate-spin" /></div>;
   if (!crew) return <div className="page-wrapper"><div className="badge badge-red">Crew member not found</div></div>;
 
-  const vesselName = (vid: string | null) => vessels.find(v => v.id === vid)?.name || "—";
+  const vesselName = (vid: string | null) => vessels.find(v => v.id === vid)?.name || "-";
   const violations = restLogs.filter(r => r.violation_flag === "true");
   const expiredCount = certs.filter(c => c.status === "expired").length;
   const expiringCount = certs.filter(c => c.status === "expiring").length;
@@ -151,7 +151,7 @@ export default function CrewProfilePage() {
               ].map(([label, val]) => (
                 <div key={label} className="flex justify-between items-start gap-2">
                   <dt style={{ fontSize: "0.75rem", color: "var(--muted)", whiteSpace: "nowrap" }}>{label}</dt>
-                  <dd className="font-semibold text-xs text-right" style={{ color: "var(--navy)" }}>{val || "—"}</dd>
+                  <dd className="font-semibold text-xs text-right" style={{ color: "var(--navy)" }}>{val || "-"}</dd>
                 </div>
               ))}
             </dl>
@@ -225,7 +225,7 @@ export default function CrewProfilePage() {
       {/* Certifications Table */}
       <div className="card mb-5">
         <div className="card-header">
-          <div><p className="section-label">Documents</p><h2 className="card-title mt-0.5">Certifications — sorted by expiry</h2></div>
+          <div><p className="section-label">Documents</p><h2 className="card-title mt-0.5">Certifications - sorted by expiry</h2></div>
         </div>
         <div style={{ overflowX: "auto" }}>
           <table className="data-table">

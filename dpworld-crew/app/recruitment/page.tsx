@@ -41,7 +41,7 @@ export default function RecruitmentPage() {
     setCandidates(prev => prev.map(c => c.id === candidateId ? { ...c, pipeline_stage: newStage } : c));
   };
 
-  const vesselName = (id: string) => vessels.find(v => v.id === id)?.name || "—";
+  const vesselName = (id: string) => vessels.find(v => v.id === id)?.name || "-";
   const reqCandidates = selectedReq ? candidates.filter(c => c.requisition_id === selectedReq.id) : [];
   const openReqs = reqs.filter(r=>r.status==="open"||r.status==="in_progress");
 
@@ -186,7 +186,7 @@ export default function RecruitmentPage() {
 
           {/* Kanban Pipeline */}
           <div className="space-y-3">
-            <h2 className="font-semibold text-[var(--navy)]">Candidate Pipeline — Step by Step</h2>
+            <h2 className="font-semibold text-[var(--navy)]">Candidate Pipeline - Step by Step</h2>
             <div className="grid grid-cols-8 gap-2 overflow-x-auto pb-2">
               {PIPELINE.map(stage => {
                 const stageCandidates = reqCandidates.filter(c => c.pipeline_stage === stage);
@@ -257,7 +257,7 @@ export default function RecruitmentPage() {
                 </div>
                 <div>
                   <div className="text-xs font-semibold text-[var(--muted)] uppercase mb-1">Interview Notes</div>
-                  <div className="text-sm text-[var(--muted)]">{selectedCandidate.interview_notes || "—"}</div>
+                  <div className="text-sm text-[var(--muted)]">{selectedCandidate.interview_notes || "-"}</div>
                 </div>
                 <div>
                   <div className="text-xs font-semibold text-[var(--muted)] uppercase mb-1">Offer Status</div>

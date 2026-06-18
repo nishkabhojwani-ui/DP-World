@@ -1,1 +1,220 @@
-[]
+[
+  {
+    "id": "run-001",
+    "template_id": "tpl-001",
+    "template_name": "STCW Compliance Audit",
+    "crew_id": "1c5dfefa-883f-463f-8ec4-919121f66730",
+    "crew_name": "Captain Ahmed Al-Mansouri",
+    "created_at": "2024-06-16T10:30:00Z",
+    "overall_status": "COMPLIANT",
+    "pass_count": 8,
+    "fail_count": 0,
+    "warn_count": 0,
+    "results": [
+      {
+        "id": "item-1",
+        "category": "Certifications",
+        "item": "Certificate of Competency valid for rank",
+        "mandatory": true,
+        "status": "PASS",
+        "message": "Captain's CoC Class I valid until 2026"
+      },
+      {
+        "id": "item-2",
+        "category": "Certifications",
+        "item": "GMDSS certification current",
+        "mandatory": true,
+        "status": "PASS",
+        "message": "GMDSS GOC valid until 2025"
+      },
+      {
+        "id": "item-3",
+        "category": "Certifications",
+        "item": "STCW Basic Safety Training valid",
+        "mandatory": true,
+        "status": "PASS",
+        "message": "BST current, expires 2025"
+      },
+      {
+        "id": "item-4",
+        "category": "Medical",
+        "item": "Medical ENG1 certification valid",
+        "mandatory": true,
+        "status": "PASS",
+        "message": "Medical ENG1 valid until 2024-12-15"
+      },
+      {
+        "id": "item-5",
+        "category": "Medical",
+        "item": "Yellow fever vaccination current",
+        "mandatory": false,
+        "status": "PASS",
+        "message": "Yellow fever vaccination valid"
+      },
+      {
+        "id": "item-6",
+        "category": "Documentation",
+        "item": "Seaman's book valid",
+        "mandatory": true,
+        "status": "PASS",
+        "message": "CDC book valid and registered"
+      },
+      {
+        "id": "item-7",
+        "category": "Documentation",
+        "item": "Passport validity 6+ months",
+        "mandatory": true,
+        "status": "PASS",
+        "message": "Passport valid until 2027"
+      },
+      {
+        "id": "item-8",
+        "category": "Rest Hours",
+        "item": "STCW rest hour compliance logged",
+        "mandatory": true,
+        "status": "PASS",
+        "message": "Rest hours compliant for June"
+      }
+    ]
+  },
+  {
+    "id": "run-002",
+    "template_id": "tpl-001",
+    "template_name": "STCW Compliance Audit",
+    "crew_id": "ff7d2d77-95c2-4cfc-9b92-106d69a688a1",
+    "crew_name": "Chief Officer Hassan Saleh",
+    "created_at": "2024-06-15T14:20:00Z",
+    "overall_status": "AT_RISK",
+    "pass_count": 6,
+    "fail_count": 0,
+    "warn_count": 2,
+    "results": [
+      {
+        "id": "item-1",
+        "category": "Certifications",
+        "item": "Certificate of Competency valid for rank",
+        "mandatory": true,
+        "status": "PASS",
+        "message": "Chief Officer's CoC Class II valid until 2025"
+      },
+      {
+        "id": "item-2",
+        "category": "Certifications",
+        "item": "GMDSS certification current",
+        "mandatory": true,
+        "status": "PASS",
+        "message": "GMDSS GOC valid until 2024-08-30"
+      },
+      {
+        "id": "item-3",
+        "category": "Certifications",
+        "item": "STCW Basic Safety Training valid",
+        "mandatory": true,
+        "status": "PASS",
+        "message": "BST current, expires 2025"
+      },
+      {
+        "id": "item-4",
+        "category": "Medical",
+        "item": "Medical ENG1 certification valid",
+        "mandatory": true,
+        "status": "WARN",
+        "message": "Medical ENG1 expiring within 60 days (expires 2024-08-10)"
+      },
+      {
+        "id": "item-5",
+        "category": "Medical",
+        "item": "Yellow fever vaccination current",
+        "mandatory": false,
+        "status": "PASS",
+        "message": "Yellow fever vaccination valid"
+      },
+      {
+        "id": "item-6",
+        "category": "Documentation",
+        "item": "Seaman's book valid",
+        "mandatory": true,
+        "status": "PASS",
+        "message": "CDC book valid and registered"
+      },
+      {
+        "id": "item-7",
+        "category": "Documentation",
+        "item": "Passport validity 6+ months",
+        "mandatory": true,
+        "status": "WARN",
+        "message": "Passport expiring within 6 months (expires 2024-12-20)"
+      },
+      {
+        "id": "item-8",
+        "category": "Rest Hours",
+        "item": "STCW rest hour compliance logged",
+        "mandatory": true,
+        "status": "PASS",
+        "message": "Rest hours compliant for June"
+      }
+    ]
+  },
+  {
+    "id": "run-003",
+    "template_id": "tpl-002",
+    "template_name": "PSC Readiness Checklist",
+    "crew_id": "a7015549-6201-4d25-bb1d-9fb8f088ac7f",
+    "crew_name": "MV-Alpha Crew",
+    "created_at": "2024-06-14T11:00:00Z",
+    "overall_status": "COMPLIANT",
+    "pass_count": 6,
+    "fail_count": 0,
+    "warn_count": 0,
+    "results": [
+      {
+        "id": "item-9",
+        "category": "Safety Equipment",
+        "item": "Life jackets for all crew",
+        "mandatory": true,
+        "status": "PASS",
+        "message": "All 22 crew members have functional life jackets"
+      },
+      {
+        "id": "item-10",
+        "category": "Safety Equipment",
+        "item": "Lifeboat equipment inspected",
+        "mandatory": true,
+        "status": "PASS",
+        "message": "Lifeboats inspected and certified current"
+      },
+      {
+        "id": "item-11",
+        "category": "Records",
+        "item": "Oil record book current",
+        "mandatory": true,
+        "status": "PASS",
+        "message": "ORB entries up to date and signed"
+      },
+      {
+        "id": "item-12",
+        "category": "Records",
+        "item": "Accident/incident log maintained",
+        "mandatory": true,
+        "status": "PASS",
+        "message": "No reportable incidents this quarter"
+      },
+      {
+        "id": "item-13",
+        "category": "Maintenance",
+        "item": "Engine room bilge system functional",
+        "mandatory": true,
+        "status": "PASS",
+        "message": "Bilge system tested and operational"
+      },
+      {
+        "id": "item-14",
+        "category": "Maintenance",
+        "item": "Fire fighting systems tested",
+        "mandatory": true,
+        "status": "PASS",
+        "message": "Fire fighting systems drills completed"
+      }
+    ]
+  }
+]

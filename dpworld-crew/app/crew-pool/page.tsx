@@ -129,7 +129,7 @@ export default function CrewPoolPage() {
                     <td className="capitalize">{c.rank_category}</td>
                     <td>{c.nationality}</td>
                     <td><span className={`badge ${STATUS_BADGE[c.status] || "badge-gray"}`}>{c.status}</span></td>
-                    <td>{c.next_available_date || "—"}</td>
+                    <td>{c.next_available_date || "-"}</td>
                     <td>
                       <div className="flex items-center gap-2">
                         <div className="progress-bar w-20">

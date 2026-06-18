@@ -68,7 +68,7 @@ function GanttChart({ contracts, crew, vesselId }: { contracts: Contract[]; crew
                 return (
                   <div key={c.id}
                     style={{ position: "absolute", top: 3, bottom: 3, left: `${posOf(c.start_date)}%`, width: `${widthOf(c.start_date, c.end_date)}%`, background: blockColor(days), borderRadius: 4, display: "flex", alignItems: "center", padding: "0 8px", overflow: "hidden", cursor: "default" }}
-                    title={`${crewMember?.full_name || "?"} — ${c.start_date} to ${c.end_date} (${days}d remaining)`}>
+                    title={`${crewMember?.full_name || "?"} - ${c.start_date} to ${c.end_date} (${days}d remaining)`}>
                     <span style={{ fontSize: "0.625rem", fontWeight: 700, color: "white", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                       {crewMember?.full_name?.split(" ")[0] || "?"} · {c.rotation_type}
                     </span>
@@ -198,7 +198,7 @@ function RotationContent() {
             {criticalGaps.map((c, i) => {
               const crewMember = crew.find(cm => cm.id === c.crew_id);
               const days = Math.round((new Date(c.end_date).getTime() - today.getTime()) / 86400000);
-              return <div key={i}>{crewMember?.full_name} ({c.rank_on_vessel}) — sign-off in {days}d</div>;
+              return <div key={i}>{crewMember?.full_name} ({c.rank_on_vessel}) - sign-off in {days}d</div>;
             })}
           </div>
         </div>
@@ -243,7 +243,7 @@ function RotationContent() {
         <div className="card mb-5">
           <div className="card-header">
             <p className="section-label">Coverage</p>
-            <h2 className="card-title mt-0.5">Rank Coverage — {vessel?.name}</h2>
+            <h2 className="card-title mt-0.5">Rank Coverage - {vessel?.name}</h2>
           </div>
           <div className="card-body space-y-3">
             {RANK_ORDER.map(rank => {
@@ -300,7 +300,7 @@ function RotationContent() {
                   const days = Math.round((new Date(c.end_date).getTime() - today.getTime()) / 86400000);
                   return (
                     <tr key={c.id} className={days < 7 ? "bg-red-50" : ""}>
-                      <td><Link href={`/crew-pool/${c.crew_id}`} className="font-semibold hover:underline" style={{ color: "var(--navy)" }}>{crewMember?.full_name || "—"}</Link></td>
+                      <td><Link href={`/crew-pool/${c.crew_id}`} className="font-semibold hover:underline" style={{ color: "var(--navy)" }}>{crewMember?.full_name || "-"}</Link></td>
                       <td className="td-primary">{c.rank_on_vessel}</td>
                       <td>{c.end_date}</td>
                       <td><span className="font-bold" style={{ color: blockColor(days) }}>{days}d</span></td>
@@ -326,7 +326,7 @@ function RotationContent() {
         <div className="card-header">
           <div>
             <p className="section-label">Current</p>
-            <h2 className="card-title mt-0.5">Active Contracts — {vessel?.name}</h2>
+            <h2 className="card-title mt-0.5">Active Contracts - {vessel?.name}</h2>
           </div>
         </div>
         <div style={{ overflowX: "auto" }}>
@@ -349,7 +349,7 @@ function RotationContent() {
                 const duration = Math.round((new Date(c.end_date).getTime() - new Date(c.start_date).getTime()) / 86400000);
                 return (
                   <tr key={c.id} className={days < 7 ? "bg-red-50 border-l-4 border-red-500" : ""}>
-                    <td><Link href={`/crew-pool/${c.crew_id}`} className="font-semibold hover:underline" style={{ color: "var(--navy)" }}>{crewMember?.full_name || "—"}</Link></td>
+                    <td><Link href={`/crew-pool/${c.crew_id}`} className="font-semibold hover:underline" style={{ color: "var(--navy)" }}>{crewMember?.full_name || "-"}</Link></td>
                     <td className="td-primary font-medium">{c.rank_on_vessel}</td>
                     <td className="text-[var(--muted)]">{c.start_date}</td>
                     <td className="font-medium">{c.end_date}</td>

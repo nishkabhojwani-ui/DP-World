@@ -5,10 +5,11 @@ import Link from "next/link";
 import AIBadge from "@/components/AIBadge";
 
 interface KPIs { crewOnBoard: number; certAlerts: number; activeChanges: number; restViolations: number; }
+interface CrewChange { status: string; incoming_crew_id: string | null; change_port: string; planned_date: string; rank: string; }
 interface DashboardData {
   kpis: KPIs;
   expiredOnboard: Record<string, unknown>[];
-  changesThisWeek: Record<string, unknown>[];
+  changesThisWeek: CrewChange[];
   fleetStatus: Record<string, unknown>[];
 }
 
@@ -70,7 +71,7 @@ export default function DashboardPage() {
               <AIBadge type="analyzed" size="sm" />
             </div>
             <p className="text-sm mb-3" style={{ color: "var(--muted)" }}>
-              Real-time AI analysis is continuously monitoring your fleet. Here are today's key insights:
+              Real-time AI analysis is continuously monitoring your fleet. Here are today&#39;s key insights:
             </p>
             <div className="grid grid-cols-3 gap-3">
               <div className="p-3 rounded-lg bg-white/60">
@@ -143,7 +144,7 @@ export default function DashboardPage() {
         <div className="alert-banner error mb-6">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
-              <span className="font-bold text-sm">Expired Certificates — Active Crew</span>
+              <span className="font-bold text-sm">Expired Certificates - Active Crew</span>
               <AIBadge type="flagged" size="sm" />
             </div>
             <span className="badge badge-red">{expiredOnboard.length} alerts</span>
@@ -152,7 +153,7 @@ export default function DashboardPage() {
             {expiredOnboard.slice(0, 6).map((cert, i) => (
               <div key={i} className="text-xs flex items-center gap-2" style={{ color: "#C53030" }}>
                 <span className="w-1 h-1 rounded-full bg-red-500 flex-shrink-0" />
-                <strong>{String(cert.cert_type)}</strong> — expired {String(cert.expiry_date)}
+                <strong>{String(cert.cert_type)}</strong> - expired {String(cert.expiry_date)}
               </div>
             ))}
           </div>
@@ -163,20 +164,20 @@ export default function DashboardPage() {
       )}
 
       {/* Critical Crew Changes Alert */}
-      {changesThisWeek.filter((c: any) => c.status === "planned" || c.status === "docs_check").length > 0 && (
+      {changesThisWeek.filter((c: CrewChange) => c.status === "planned" || c.status === "docs_check").length > 0 && (
         <div className="alert-banner error mb-6">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
               <span className="font-bold text-sm">Critical Crew Change Required</span>
               <AIBadge type="detected" size="sm" />
             </div>
-            <span className="badge badge-red">{changesThisWeek.filter((c: any) => c.status === "planned" || c.status === "docs_check").length} pending</span>
+            <span className="badge badge-red">{changesThisWeek.filter((c: CrewChange) => c.status === "planned" || c.status === "docs_check").length} pending</span>
           </div>
           <div className="space-y-1">
-            {changesThisWeek.filter((c: any) => c.status === "planned" || c.status === "docs_check").slice(0, 5).map((cc, i) => (
+            {changesThisWeek.filter((c: CrewChange) => c.status === "planned" || c.status === "docs_check").slice(0, 5).map((cc, i) => (
               <div key={i} className="text-xs flex items-center gap-2" style={{ color: "#C53030" }}>
                 <span className="w-1 h-1 rounded-full bg-red-500 flex-shrink-0" />
-                <strong>{String((cc as any).incoming_crew_id ? "Incoming crew" : "Outgoing crew")}</strong> — {String((cc as any).change_port)} on {String((cc as any).planned_date)}
+                <strong>{String(cc.incoming_crew_id ? "Incoming crew" : "Outgoing crew")}</strong> - {String(cc.change_port)} on {String(cc.planned_date)}
               </div>
             ))}
           </div>

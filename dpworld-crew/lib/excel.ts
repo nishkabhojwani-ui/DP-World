@@ -81,10 +81,16 @@ function serializeRowForSupabase(
 export async function readSheet<T>(filename: string): Promise<T[]> {
   const config = getTableConfig(filename);
   if (isSupabaseConfigured() && config) {
-    const supabase = getSupabaseAdminClient();
-    const { data, error } = await supabase.from(config.tableName).select("*");
-    if (error) throw error;
-    return (data ?? []) as T[];
+    try {
+      const supabase = getSupabaseAdminClient();
+      const { data, error } = await supabase.from(config.tableName).select("*");
+      if (error) throw error;
+      if (data && data.length > 0) {
+        return data as T[];
+      }
+    } catch (err) {
+      console.warn(`Failed to read ${filename} from Supabase, falling back to Excel:`, err);
+    }
   }
 
   const filePath = dataPath(filename);

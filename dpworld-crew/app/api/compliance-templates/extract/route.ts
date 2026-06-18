@@ -1,13 +1,8 @@
-import fs from "fs/promises";
-import os from "os";
-import path from "path";
-import { execFile } from "child_process";
-import { promisify } from "util";
 import { NextResponse } from "next/server";
 import { extractChecklistItems, getSourceType } from "@/lib/compliance";
+import pdfParse from "pdf-parse";
 
 export const runtime = "nodejs";
-const execFileAsync = promisify(execFile);
 
 function streamJsonLine(controller: ReadableStreamDefaultController, payload: unknown) {
   controller.enqueue(`${JSON.stringify(payload)}\n`);
@@ -16,17 +11,19 @@ function streamJsonLine(controller: ReadableStreamDefaultController, payload: un
 async function fileToText(file: File) {
   const bytes = Buffer.from(await file.arrayBuffer());
   if (file.name.toLowerCase().endsWith(".pdf")) {
-    const tmpPath = path.join(os.tmpdir(), `${Date.now()}-${file.name}`);
-    await fs.writeFile(tmpPath, bytes);
     try {
-      const scriptPath = path.join(process.cwd(), "scripts", "extract-pdf-text.mjs");
-      const { stdout } = await execFileAsync(process.execPath, [scriptPath, tmpPath], {
-        maxBuffer: 10 * 1024 * 1024,
-      });
-      const parsed = JSON.parse(stdout) as { text?: string };
-      return parsed.text ?? "";
-    } finally {
-      await fs.unlink(tmpPath).catch(() => undefined);
+      const data = await pdfParse(bytes);
+      const text = data.text
+        .split('\n')
+        .map((line: string) => line.trim())
+        .filter((line: string) => line)
+        .join('\n')
+        .replace(/\s+/g, ' ')
+        .trim();
+      return text;
+    } catch (error) {
+      console.error("PDF parsing error:", error);
+      throw new Error(`Failed to parse PDF: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
   return bytes.toString("utf8");

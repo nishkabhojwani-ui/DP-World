@@ -116,8 +116,8 @@ export default function VesselDetailPage() {
                   <tr key={cm.id}>
                     <td><Link href={`/crew-pool/${cm.id}`} className="font-semibold hover:underline" style={{ color: "var(--navy)" }}>{cm.full_name}</Link></td>
                     <td className="td-primary">{cm.rank}</td>
-                    <td>{contract?.end_date || "—"}</td>
-                    <td>{days !== null ? <span className="font-bold" style={{ color: days < 15 ? "var(--red)" : days < 30 ? "var(--amber)" : "var(--teal)" }}>{days}d</span> : "—"}</td>
+                    <td>{contract?.end_date || "-"}</td>
+                    <td>{days !== null ? <span className="font-bold" style={{ color: days < 15 ? "var(--red)" : days < 30 ? "var(--amber)" : "var(--teal)" }}>{days}d</span> : "-"}</td>
                     <td>
                       <div className="flex items-center gap-2">
                         <div className="progress-bar w-16"><div className="progress-fill" style={{ width: `${health}%`, background: health >= 90 ? "var(--teal)" : health >= 70 ? "var(--amber)" : "var(--red)" }} /></div>

@@ -50,8 +50,8 @@ export default function CrewChangesPage() {
     ]).then(([ch, cl, cm, v]) => { setChanges(ch); setChecklists(cl); setCrew(cm); setVessels(v); setLoading(false); });
   }, []);
 
-  const crewName = (id: string | null) => crew.find(c => c.id === id)?.full_name || "—";
-  const vesselName = (id: string) => vessels.find(v => v.id === id)?.name || "—";
+  const crewName = (id: string | null) => crew.find(c => c.id === id)?.full_name || "-";
+  const vesselName = (id: string) => vessels.find(v => v.id === id)?.name || "-";
   const checklist = (changeId: string) => checklists.find(cl => cl.crew_change_id === changeId);
 
   if (loading) return <div className="flex items-center justify-center h-screen"><div className="w-8 h-8 border-2 border-[var(--navy)] border-t-transparent rounded-full animate-spin" /></div>;
@@ -155,7 +155,7 @@ export default function CrewChangesPage() {
             <div className="card-header">
               <div>
                 <p className="section-label">Crew Change Detail</p>
-                <h2 className="card-title mt-0.5">{vesselName(selected.vessel_id)} — {selected.rank}</h2>
+                <h2 className="card-title mt-0.5">{vesselName(selected.vessel_id)} - {selected.rank}</h2>
               </div>
               <div className="flex items-center gap-3">
                 <span className="badge" style={{ background: STAGE_ACCENT[selected.status] + "22", color: STAGE_ACCENT[selected.status], border: `1px solid ${STAGE_ACCENT[selected.status]}44` }}>

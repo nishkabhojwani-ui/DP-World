@@ -139,7 +139,7 @@ export default function CompliancePage() {
                         <td className="td-primary">{cm.rank}</td>
                         {STCW_COLS.map(col => {
                           const isRequired = required.some(r => r.toLowerCase().includes(col.key.toLowerCase()));
-                          if (!isRequired) return <td key={col.key} style={{ textAlign: "center", color: "var(--muted2)" }}>—</td>;
+                          if (!isRequired) return <td key={col.key} style={{ textAlign: "center", color: "var(--muted2)" }}>-</td>;
                           const cert = crewCerts.find(c => c.cert_type.toLowerCase().includes(col.key.toLowerCase()));
                           const status = cert ? cert.status : "missing";
                           const styles: Record<string, { bg: string; color: string; text: string }> = {
@@ -189,11 +189,11 @@ export default function CompliancePage() {
                     const cm = crew.find(c => c.id === r.crew_id);
                     return (
                       <tr key={i} style={{ background: "#FFF5F5" }}>
-                        <td><Link href={`/crew-pool/${r.crew_id}`} className="font-semibold hover:underline" style={{ color: "var(--navy)" }}>{cm?.full_name || "—"}</Link></td>
+                        <td><Link href={`/crew-pool/${r.crew_id}`} className="font-semibold hover:underline" style={{ color: "var(--navy)" }}>{cm?.full_name || "-"}</Link></td>
                         <td>{r.log_date}</td>
                         <td><span className="font-bold" style={{ color: "var(--red)" }}>{r.actual_work_hours}h</span></td>
                         <td><span className="font-bold" style={{ color: "var(--red)" }}>{r.rest_hours}h</span></td>
-                        <td><span className="badge badge-red">{r.violation_type?.replace(/_/g, " ") || "—"}</span></td>
+                        <td><span className="badge badge-red">{r.violation_type?.replace(/_/g, " ") || "-"}</span></td>
                         <td><span className={`badge ${r.force_majeure === "true" ? "badge-amber" : "badge-gray"}`}>{r.force_majeure === "true" ? "Yes" : "No"}</span></td>
                       </tr>
                     );
@@ -218,7 +218,7 @@ export default function CompliancePage() {
                   const endingSoon = Math.round((new Date(c.end_date).getTime() - new Date().getTime()) / 86400000) < 30;
                   return (
                     <tr key={i} style={{ background: mlcViolation ? "#FFF5F5" : endingSoon ? "#FFFBEB" : undefined }}>
-                      <td><Link href={`/crew-pool/${c.crew_id}`} className="font-semibold hover:underline" style={{ color: "var(--navy)" }}>{cm?.full_name || "—"}</Link></td>
+                      <td><Link href={`/crew-pool/${c.crew_id}`} className="font-semibold hover:underline" style={{ color: "var(--navy)" }}>{cm?.full_name || "-"}</Link></td>
                       <td>{vesselName(c.vessel_id)}</td>
                       <td>{c.start_date}</td>
                       <td>{c.end_date}</td>
