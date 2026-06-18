@@ -42,12 +42,13 @@ export default function CrewChangesPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchWithTimeout = (url: string, timeout = 3000) => Promise.race([fetch(url).then(r => r.json()), new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), timeout))]).catch(() => []);
     Promise.all([
-      fetch("/api/crew-changes").then(r => r.json()).catch(e => { console.error("Error loading crew-changes:", e); return []; }),
-      fetch("/api/checklists").then(r => r.json()).catch(e => { console.error("Error loading checklists:", e); return []; }),
-      fetch("/api/crew").then(r => r.json()).catch(e => { console.error("Error loading crew:", e); return []; }),
-      fetch("/api/vessels").then(r => r.json()).catch(e => { console.error("Error loading vessels:", e); return []; }),
-    ]).then(([ch, cl, cm, v]) => { setChanges(ch || []); setChecklists(cl || []); setCrew(cm || []); setVessels(v || []); setLoading(false); }).catch(e => { console.error("Error in Promise.all:", e); setLoading(false); });
+      fetchWithTimeout("/api/crew-changes"),
+      fetchWithTimeout("/api/checklists"),
+      fetchWithTimeout("/api/crew"),
+      fetchWithTimeout("/api/vessels"),
+    ]).then(([ch, cl, cm, v]) => { setChanges(ch || []); setChecklists(cl || []); setCrew(cm || []); setVessels(v || []); setLoading(false); }).catch(() => { setLoading(false); });
   }, []);
 
   const crewName = (id: string | null) => crew.find(c => c.id === id)?.full_name || "-";

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createComplianceTemplate, listComplianceTemplates } from "@/lib/compliance";
+import { createComplianceTemplate } from "@/lib/compliance";
 
 const SAMPLE_TEMPLATES = [
   {

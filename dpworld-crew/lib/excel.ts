@@ -92,10 +92,11 @@ export async function readSheet<T>(filename: string): Promise<T[]> {
   if (isSupabaseConfigured() && config) {
     try {
       const supabase = getSupabaseAdminClient();
-      const { data, error } = await Promise.race([
+      const result = await Promise.race([
         supabase.from(config.tableName).select("*"),
         new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 1000))
-      ]) as any;
+      ]) as { data: T[] | null; error: Error | null };
+      const { data, error } = result;
 
       if (!error && data && data.length > 0) {
         return data as T[];

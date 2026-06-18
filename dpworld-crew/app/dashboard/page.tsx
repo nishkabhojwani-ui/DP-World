@@ -32,10 +32,12 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/dashboard")
-      .then(r => r.json())
+    Promise.race([
+      fetch("/api/dashboard").then(r => r.json()),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 3000))
+    ])
       .then(d => { setData(d); setLoading(false); })
-      .catch(err => { console.error("Failed to load dashboard:", err); setLoading(false); });
+      .catch(() => { setLoading(false); });
   }, []);
 
   if (loading) return (
