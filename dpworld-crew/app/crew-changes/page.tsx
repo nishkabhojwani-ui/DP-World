@@ -43,11 +43,11 @@ export default function CrewChangesPage() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/crew-changes").then(r => r.json()),
-      fetch("/api/checklists").then(r => r.json()),
-      fetch("/api/crew").then(r => r.json()),
-      fetch("/api/vessels").then(r => r.json()),
-    ]).then(([ch, cl, cm, v]) => { setChanges(ch); setChecklists(cl); setCrew(cm); setVessels(v); setLoading(false); });
+      fetch("/api/crew-changes").then(r => r.json()).catch(e => { console.error("Error loading crew-changes:", e); return []; }),
+      fetch("/api/checklists").then(r => r.json()).catch(e => { console.error("Error loading checklists:", e); return []; }),
+      fetch("/api/crew").then(r => r.json()).catch(e => { console.error("Error loading crew:", e); return []; }),
+      fetch("/api/vessels").then(r => r.json()).catch(e => { console.error("Error loading vessels:", e); return []; }),
+    ]).then(([ch, cl, cm, v]) => { setChanges(ch || []); setChecklists(cl || []); setCrew(cm || []); setVessels(v || []); setLoading(false); }).catch(e => { console.error("Error in Promise.all:", e); setLoading(false); });
   }, []);
 
   const crewName = (id: string | null) => crew.find(c => c.id === id)?.full_name || "-";

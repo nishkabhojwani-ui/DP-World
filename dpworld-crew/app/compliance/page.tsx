@@ -50,18 +50,18 @@ export default function CompliancePage() {
 
   useEffect(() => {
     Promise.all([
-      fetch("/api/crew").then(r => r.json()),
-      fetch("/api/certifications").then(r => r.json()),
-      fetch("/api/sea-contracts").then(r => r.json()),
-      fetch("/api/rest-hours").then(r => r.json()),
-      fetch("/api/crew-changes").then(r => r.json()),
-      fetch("/api/checklists").then(r => r.json()),
-      fetch("/api/vessels").then(r => r.json()),
+      fetch("/api/crew").then(r => r.json()).catch(e => { console.error("Error loading crew:", e); return []; }),
+      fetch("/api/certifications").then(r => r.json()).catch(e => { console.error("Error loading certifications:", e); return []; }),
+      fetch("/api/sea-contracts").then(r => r.json()).catch(e => { console.error("Error loading sea-contracts:", e); return []; }),
+      fetch("/api/rest-hours").then(r => r.json()).catch(e => { console.error("Error loading rest-hours:", e); return []; }),
+      fetch("/api/crew-changes").then(r => r.json()).catch(e => { console.error("Error loading crew-changes:", e); return []; }),
+      fetch("/api/checklists").then(r => r.json()).catch(e => { console.error("Error loading checklists:", e); return []; }),
+      fetch("/api/vessels").then(r => r.json()).catch(e => { console.error("Error loading vessels:", e); return []; }),
     ]).then(([cm, ce, co, rl, ch, cl, v]) => {
-      setCrew(cm); setCerts(ce); setContracts(co);
-      setRestLogs(rl); setChanges(ch); setChecklists(cl); setVessels(v);
+      setCrew(cm || []); setCerts(ce || []); setContracts(co || []);
+      setRestLogs(rl || []); setChanges(ch || []); setChecklists(cl || []); setVessels(v || []);
       setLoading(false);
-    });
+    }).catch(e => { console.error("Error in Promise.all:", e); setLoading(false); });
   }, []);
 
   const onboardCrew = crew.filter(c => c.status === "onboard");
