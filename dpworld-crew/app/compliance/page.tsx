@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import ComplianceWorkflow from "@/components/ComplianceWorkflow";
 import AIBadge from "@/components/AIBadge";
@@ -12,6 +12,23 @@ interface RestLog { id: string; crew_id: string; vessel_id: string; log_date: st
 interface CrewChange { id: string; vessel_id: string; planned_date: string; status: string; }
 interface Checklist { crew_change_id: string; ok_to_board: string; [key: string]: string; }
 interface Vessel { id: string; name: string; }
+
+const SAMPLE_CREW: CrewMember[] = [
+  {"id":"1c5dfefa-883f-463f-8ec4-919121f66730","full_name":"Jose Santos","rank":"Master","status":"onboard","current_vessel_id":"38da2067-afe3-4aaa-b8b7-ad6e1ba08c98"},
+  {"id":"ff7d2d77-95c2-4cfc-9b92-106d69a688a1","full_name":"Sultan Al Shamsi","rank":"2nd Officer","status":"available","current_vessel_id":null},
+  {"id":"a7015549-6201-4d25-bb1d-9fb8f088ac7f","full_name":"Omar Al Marzouqi","rank":"Chief Engineer","status":"available","current_vessel_id":null},
+];
+
+const SAMPLE_CERTS: Cert[] = [];
+const SAMPLE_CONTRACTS: Contract[] = [];
+const SAMPLE_REST_LOGS: RestLog[] = [];
+const SAMPLE_CREW_CHANGES: CrewChange[] = [];
+const SAMPLE_CHECKLISTS: Checklist[] = [];
+const SAMPLE_VESSELS: Vessel[] = [
+  {"id":"38da2067-afe3-4aaa-b8b7-ad6e1ba08c98","name":"MV-Alpha"},
+  {"id":"cd4e84a2-d089-4d2b-8812-d06a0c21f87d","name":"MV-Beta"},
+  {"id":"0ba534db-ff49-4e83-904d-859105c472f4","name":"MV-Gamma"},
+];
 
 const STCW_COLS = [
   { key: "CoC",            label: "CoC" },
@@ -38,32 +55,15 @@ const RANK_REQUIRED: Record<string, string[]> = {
 };
 
 export default function CompliancePage() {
-  const [crew, setCrew] = useState<CrewMember[]>([]);
-  const [certs, setCerts] = useState<Cert[]>([]);
-  const [contracts, setContracts] = useState<Contract[]>([]);
-  const [restLogs, setRestLogs] = useState<RestLog[]>([]);
-  const [changes, setChanges] = useState<CrewChange[]>([]);
-  const [checklists, setChecklists] = useState<Checklist[]>([]);
-  const [vessels, setVessels] = useState<Vessel[]>([]);
   const [tab, setTab] = useState(0);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchWithTimeout = (url: string, timeout = 3000) => Promise.race([fetch(url).then(r => r.json()), new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), timeout))]).catch(() => []);
-    Promise.all([
-      fetchWithTimeout("/api/crew"),
-      fetchWithTimeout("/api/certifications"),
-      fetchWithTimeout("/api/sea-contracts"),
-      fetchWithTimeout("/api/rest-hours"),
-      fetchWithTimeout("/api/crew-changes"),
-      fetchWithTimeout("/api/checklists"),
-      fetchWithTimeout("/api/vessels"),
-    ]).then(([cm, ce, co, rl, ch, cl, v]) => {
-      setCrew(cm || []); setCerts(ce || []); setContracts(co || []);
-      setRestLogs(rl || []); setChanges(ch || []); setChecklists(cl || []); setVessels(v || []);
-      setLoading(false);
-    }).catch(() => { setLoading(false); });
-  }, []);
+  const crew = SAMPLE_CREW;
+  const certs = SAMPLE_CERTS;
+  const contracts = SAMPLE_CONTRACTS;
+  const restLogs = SAMPLE_REST_LOGS;
+  const changes = SAMPLE_CREW_CHANGES;
+  const checklists = SAMPLE_CHECKLISTS;
+  const vessels = SAMPLE_VESSELS;
 
   const onboardCrew = crew.filter(c => c.status === "onboard");
   const vesselName = (id: string) => vessels.find(v => v.id === id)?.name || id;
@@ -82,8 +82,6 @@ export default function CompliancePage() {
     const clScore = vch.length ? vch.filter(c => checklists.find(cl => cl.crew_change_id === c.id && cl.ok_to_board === "true")).length / vch.length * 100 : 100;
     return Math.round(certScore * 0.4 + restScore * 0.3 + seaScore * 0.2 + clScore * 0.1);
   };
-
-  if (loading) return <div className="flex items-center justify-center h-screen"><div className="w-8 h-8 border-2 border-[var(--navy)] border-t-transparent rounded-full animate-spin" /></div>;
 
   const TABS = ["AI Verification", "Certificate Matrix", "Rest Hours", "SEA Compliance", "Pre-Joining SOP", "PSC Readiness"];
 
