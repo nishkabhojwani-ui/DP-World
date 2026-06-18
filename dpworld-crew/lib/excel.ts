@@ -79,30 +79,33 @@ function serializeRowForSupabase(
 }
 
 export async function readSheet<T>(filename: string): Promise<T[]> {
+  const filePath = dataPath(filename);
+
+  // Try local file first (works in dev, returns [] in serverless)
+  const localData = await readSheetFromWorkbook<T>(filePath);
+  if (localData && localData.length > 0) {
+    return localData;
+  }
+
+  // If no local file and Supabase configured, try it (but with timeout)
   const config = getTableConfig(filename);
   if (isSupabaseConfigured() && config) {
     try {
       const supabase = getSupabaseAdminClient();
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2000);
-
       const { data, error } = await Promise.race([
         supabase.from(config.tableName).select("*"),
-        new Promise((_, reject) => setTimeout(() => reject(new Error("Supabase timeout")), 2000))
+        new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), 1000))
       ]) as any;
 
-      clearTimeout(timeoutId);
-      if (error) throw error;
-      if (data && data.length > 0) {
+      if (!error && data && data.length > 0) {
         return data as T[];
       }
     } catch (err) {
-      console.warn(`Failed to read ${filename} from Supabase, falling back to Excel:`, err);
+      console.warn(`Failed to read ${filename} from Supabase:`, err);
     }
   }
 
-  const filePath = dataPath(filename);
-  return readSheetFromWorkbook<T>(filePath);
+  return [];
 }
 
 export async function writeSheet<T extends Record<string, unknown>>(
