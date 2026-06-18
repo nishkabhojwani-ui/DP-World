@@ -250,22 +250,6 @@ export async function extractChecklistItems(text: string, fileName: string) {
 }
 
 export async function listComplianceTemplates() {
-  if (isSupabaseConfigured()) {
-    try {
-      const supabase = getSupabaseAdminClient();
-      const { data, error } = await supabase
-        .from("compliance_templates")
-        .select("*")
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      if (data && data.length > 0) {
-        return data as ComplianceTemplate[];
-      }
-    } catch (err) {
-      console.warn("Failed to load templates from Supabase:", err);
-    }
-  }
-
   try {
     const templates = await readJsonArray<ComplianceTemplate>(TEMPLATES_FILE);
     if (templates.length > 0) {
@@ -359,22 +343,6 @@ export async function createComplianceTemplate(input: Omit<ComplianceTemplate, "
 }
 
 export async function listComplianceRuns() {
-  if (isSupabaseConfigured()) {
-    try {
-      const supabase = getSupabaseAdminClient();
-      const { data, error } = await supabase
-        .from("compliance_runs")
-        .select("*")
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      if (data && data.length > 0) {
-        return data as ComplianceRun[];
-      }
-    } catch (err) {
-      console.warn("Failed to read compliance runs from Supabase, falling back to JSON:", err);
-    }
-  }
-
   try {
     const runs = await readJsonArray<ComplianceRun>(RUNS_FILE);
     if (runs.length > 0) {
