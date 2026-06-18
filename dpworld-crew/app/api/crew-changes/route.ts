@@ -1,9 +1,27 @@
 import { NextResponse } from "next/server";
 import { readSheet, updateRow } from "@/lib/excel";
 
+const SAMPLE_CREW_CHANGES = [
+  {"id":"6ec0e6e9-5bf2-4462-b2ad-73c94e350c08","vessel_id":"38da2067-afe3-4aaa-b8b7-ad6e1ba08c98","rank":"Master","outgoing_crew_id":"1c5dfefa-883f-463f-8ec4-919121f66730","incoming_crew_id":"ff7d2d77-95c2-4cfc-9b92-106d69a688a1","change_port":"Jebel Ali","planned_date":"2024-06-18","actual_date":null,"status":"planned","port_agent":"Inchcape Shipping Jebel Ali","flight_details":{"flight":"EK300","departure":"2024-06-17","arrival":"2024-06-18","airline":"Emirates"},"hotel_details":{"hotel":"Radisson Blu","city":"Jebel Ali","checkin":"2024-06-17","checkout":"2024-06-18"},"joining_instructions_sent":"false","ok_to_board_issued":"false"},
+  {"id":"9f537bae-6bba-4365-a4e6-85eb31b2389a","vessel_id":"cd4e84a2-d089-4d2b-8812-d06a0c21f87d","rank":"Master","outgoing_crew_id":"3a5723a6-2cd4-4d22-8ecf-070b982d8a31","incoming_crew_id":"a7015549-6201-4d25-bb1d-9fb8f088ac7f","change_port":"Dubai","planned_date":"2024-06-22","actual_date":null,"status":"docs_check","port_agent":"GAC Shipping Dubai","flight_details":{"flight":"EK301","departure":"2024-06-21","arrival":"2024-06-22","airline":"Emirates"},"hotel_details":{"hotel":"Radisson Blu","city":"Dubai","checkin":"2024-06-21","checkout":"2024-06-22"},"joining_instructions_sent":"false","ok_to_board_issued":"false"},
+  {"id":"dde27882-05e6-47a1-b695-df367e217606","vessel_id":"0ba534db-ff49-4e83-904d-859105c472f4","rank":"Chief Officer","outgoing_crew_id":"6711b357-6d09-47ea-8917-2bf1cdaf1eac","incoming_crew_id":"52bffd8e-32c5-4fee-b30c-dfdf43062ca2","change_port":"Abu Dhabi","planned_date":"2024-06-26","actual_date":null,"status":"travel_arranged","port_agent":"Wilhelmsen Ship Services Singapore","flight_details":{"flight":"EK302","departure":"2024-06-25","arrival":"2024-06-26","airline":"Emirates"},"hotel_details":{"hotel":"Radisson Blu","city":"Abu Dhabi","checkin":"2024-06-25","checkout":"2024-06-26"},"joining_instructions_sent":"false","ok_to_board_issued":"false"},
+  {"id":"05c899a9-5e45-42b2-a11b-82560f97994a","vessel_id":"9945231d-2929-4251-b19a-73e3475ecdb1","rank":"Chief Officer","outgoing_crew_id":"db028595-1763-4662-98fc-b97ae082cfac","incoming_crew_id":"f18da2d7-b2a3-45e8-9379-5681941c75a2","change_port":"Fujairah","planned_date":"2024-06-30","actual_date":null,"status":"in_transit","port_agent":"GAC Shipping Rotterdam","flight_details":{"flight":"EK303","departure":"2024-06-29","arrival":"2024-06-30","airline":"Emirates"},"hotel_details":{"hotel":"Radisson Blu","city":"Fujairah","checkin":"2024-06-29","checkout":"2024-06-30"},"joining_instructions_sent":"false","ok_to_board_issued":"false"},
+  {"id":"2fcc28ea-d7d2-4c30-adf7-f34b9382feb0","vessel_id":"5a9b98b4-f358-4660-b5cd-a240f58d67f1","rank":"2nd Officer","outgoing_crew_id":"284d7560-1b9e-4bf5-a969-80779d750283","incoming_crew_id":"4a2abe0d-3a1a-4aee-9131-008cae61529b","change_port":"Singapore","planned_date":"2024-07-04","actual_date":"2024-07-03","status":"signed_on","port_agent":"Inchcape Southampton","flight_details":{"flight":"EK304","departure":"2024-07-03","arrival":"2024-07-04","airline":"Emirates"},"hotel_details":{"hotel":"Radisson Blu","city":"Singapore","checkin":"2024-07-03","checkout":"2024-07-04"},"joining_instructions_sent":"true","ok_to_board_issued":"false"},
+  {"id":"232e49bd-712b-4d84-ba90-043fe820c72e","vessel_id":"aea31302-50fe-42c4-8537-234640af9161","rank":"2nd Officer","outgoing_crew_id":"5333307e-41ab-409b-9512-9058b36db6ff","incoming_crew_id":"9ce3f49a-c5e0-437b-9965-7d4da50e9933","change_port":"Rotterdam","planned_date":"2024-07-08","actual_date":null,"status":"planned","port_agent":"Gulf Agency Company Fujairah","flight_details":{"flight":"EK305","departure":"2024-07-07","arrival":"2024-07-08","airline":"Emirates"},"hotel_details":{"hotel":"Radisson Blu","city":"Rotterdam","checkin":"2024-07-07","checkout":"2024-07-08"},"joining_instructions_sent":"true","ok_to_board_issued":"true"},
+  {"id":"06c5962c-3f27-4d4b-9682-495ccb1fc21d","vessel_id":"1b2e4376-d1d2-4e44-b85a-b8d8b97b9a7c","rank":"3rd Officer","outgoing_crew_id":"b649e8ea-c13e-4098-a062-db00e59ec4c5","incoming_crew_id":"ff7d2d77-95c2-4cfc-9b92-106d69a688a1","change_port":"Southampton","planned_date":"2024-07-12","actual_date":null,"status":"docs_check","port_agent":"Svitzer Marine Dubai","flight_details":{"flight":"EK306","departure":"2024-07-11","arrival":"2024-07-12","airline":"Emirates"},"hotel_details":{"hotel":"Radisson Blu","city":"Southampton","checkin":"2024-07-11","checkout":"2024-07-12"},"joining_instructions_sent":"true","ok_to_board_issued":"true"},
+  {"id":"9fc44288-9450-451e-8bba-013cf4bdc0bf","vessel_id":"03291a37-fee5-4cc9-9faf-6c6cc9f4b03e","rank":"3rd Officer","outgoing_crew_id":"487997bf-389d-413f-a849-93197f1c1b8c","incoming_crew_id":"a7015549-6201-4d25-bb1d-9fb8f088ac7f","change_port":"Hamburg","planned_date":"2024-07-16","actual_date":null,"status":"travel_arranged","port_agent":"Port Link Services Abu Dhabi","flight_details":{"flight":"EK307","departure":"2024-07-15","arrival":"2024-07-16","airline":"Emirates"},"hotel_details":{"hotel":"Radisson Blu","city":"Hamburg","checkin":"2024-07-15","checkout":"2024-07-16"},"joining_instructions_sent":"true","ok_to_board_issued":"true"}
+];
+
 export async function GET() {
-  const changes = await readSheet("crew_changes.xlsx");
-  return NextResponse.json(changes);
+  try {
+    const changes = await readSheet("crew_changes.xlsx");
+    if (changes && changes.length > 0) {
+      return NextResponse.json(changes);
+    }
+  } catch (err) {
+    console.warn("Failed to read crew_changes.xlsx, using sample data:", err);
+  }
+  return NextResponse.json(SAMPLE_CREW_CHANGES);
 }
 
 export async function PATCH(request: Request) {
