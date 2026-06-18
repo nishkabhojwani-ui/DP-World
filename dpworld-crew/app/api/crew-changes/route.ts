@@ -14,8 +14,11 @@ const SAMPLE_CREW_CHANGES = [
 
 export async function GET() {
   try {
-    const changes = await readSheet("crew_changes.xlsx");
-    if (changes && changes.length > 0) {
+    const changes = await Promise.race([
+      readSheet("crew_changes.xlsx"),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("Timeout")), 2000))
+    ]);
+    if (changes && Array.isArray(changes) && changes.length > 0) {
       return NextResponse.json(changes);
     }
   } catch (err) {

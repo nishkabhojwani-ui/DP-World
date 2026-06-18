@@ -83,7 +83,15 @@ export async function readSheet<T>(filename: string): Promise<T[]> {
   if (isSupabaseConfigured() && config) {
     try {
       const supabase = getSupabaseAdminClient();
-      const { data, error } = await supabase.from(config.tableName).select("*");
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+      const { data, error } = await Promise.race([
+        supabase.from(config.tableName).select("*"),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("Supabase timeout")), 2000))
+      ]) as any;
+
+      clearTimeout(timeoutId);
       if (error) throw error;
       if (data && data.length > 0) {
         return data as T[];
