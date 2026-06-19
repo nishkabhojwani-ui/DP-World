@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { updateRow } from "@/lib/excel";
+
+export const dynamic = "force-static";
 
 const SAMPLE_CREW_CHANGES = [
   {"id":"6ec0e6e9-5bf2-4462-b2ad-73c94e350c08","vessel_id":"38da2067-afe3-4aaa-b8b7-ad6e1ba08c98","rank":"Master","outgoing_crew_id":"1c5dfefa-883f-463f-8ec4-919121f66730","incoming_crew_id":"ff7d2d77-95c2-4cfc-9b92-106d69a688a1","change_port":"Jebel Ali","planned_date":"2024-06-18","actual_date":null,"status":"planned","port_agent":"Inchcape Shipping Jebel Ali","flight_details":{"flight":"EK300","departure":"2024-06-17","arrival":"2024-06-18","airline":"Emirates"},"hotel_details":{"hotel":"Radisson Blu","city":"Jebel Ali","checkin":"2024-06-17","checkout":"2024-06-18"},"joining_instructions_sent":"false","ok_to_board_issued":"false"},
@@ -14,10 +15,4 @@ const SAMPLE_CREW_CHANGES = [
 
 export async function GET() {
   return NextResponse.json(SAMPLE_CREW_CHANGES);
-}
-
-export async function PATCH(request: Request) {
-  const { id, ...updates } = await request.json();
-  await updateRow("crew_changes.xlsx", id, updates);
-  return NextResponse.json({ success: true });
 }
