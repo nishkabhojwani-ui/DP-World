@@ -191,6 +191,10 @@ async function extractWithLlm(text: string, fileName: string) {
   }
 
   const excerpt = text.slice(0, 18000);
+  if (excerpt.replace(/\s+/g, "").length < 20) {
+    throw new Error("No readable text was found in this document. If it is a scanned PDF, it has no text layer to extract.");
+  }
+
   const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
     method: "POST",
     headers: {
@@ -225,24 +229,42 @@ async function extractWithLlm(text: string, fileName: string) {
     throw new Error("OpenRouter returned no extraction content.");
   }
 
+  let parsed: unknown;
   try {
-    const parsed = JSON.parse(extractJsonObject(content));
-    const items = Array.isArray(parsed.checklist_items) ? parsed.checklist_items : [];
-    const normalized = dedupeItems(items.map((item: Record<string, unknown>, index: number) => ({
-      id: `draft-${index + 1}`,
-      category: cleanText(String(item.category ?? inferCategory(String(item.item ?? "")))) || "General",
-      item: cleanText(String(item.item ?? "")),
-      mandatory: Boolean(item.mandatory ?? true),
-    })).filter((item: ComplianceChecklistItem) => item.item));
-
-    if (normalized.length === 0) {
-      throw new Error("The LLM returned no verifiable checklist items for this document.");
-    }
-
-    return normalized;
+    parsed = JSON.parse(extractJsonObject(content));
   } catch (error) {
     throw new Error(`The LLM returned invalid checklist JSON. ${error instanceof Error ? error.message : String(error)}`);
   }
+
+  const rawItems = pickItemsArray(parsed);
+  const normalized = dedupeItems(rawItems.map((item: Record<string, unknown>, index: number) => ({
+    id: `draft-${index + 1}`,
+    category: cleanText(String(item.category ?? inferCategory(String(item.item ?? item.description ?? "")))) || "General",
+    item: cleanText(String(item.item ?? item.description ?? item.requirement ?? item.text ?? "")),
+    mandatory: Boolean(item.mandatory ?? true),
+  })).filter((item: ComplianceChecklistItem) => item.item));
+
+  if (normalized.length === 0) {
+    throw new Error("The AI could not find any verifiable compliance requirements in this document. Try a document that lists concrete requirements (certificates, rest hours, medicals, contracts).");
+  }
+
+  return normalized;
+}
+
+// The model may return the array under various keys, or as a bare array.
+// Find the checklist array regardless of the exact response shape.
+function pickItemsArray(parsed: unknown): Record<string, unknown>[] {
+  if (Array.isArray(parsed)) return parsed as Record<string, unknown>[];
+  if (!parsed || typeof parsed !== "object") return [];
+  const obj = parsed as Record<string, unknown>;
+  const keys = ["checklist_items", "checklistItems", "items", "requirements", "checklist", "results", "compliance_requirements"];
+  for (const key of keys) {
+    if (Array.isArray(obj[key])) return obj[key] as Record<string, unknown>[];
+  }
+  for (const value of Object.values(obj)) {
+    if (Array.isArray(value)) return value as Record<string, unknown>[];
+  }
+  return [];
 }
 
 export async function extractChecklistItems(text: string, fileName: string) {
