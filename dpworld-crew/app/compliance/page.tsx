@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import ComplianceWorkflow from "@/components/ComplianceWorkflow";
 import AIBadge from "@/components/AIBadge";
 
 interface CrewMember { id: string; full_name: string; rank: string; status: string; current_vessel_id: string | null; }
@@ -113,7 +112,7 @@ export default function CompliancePage() {
         <div style={{ padding: "1.25rem" }}>
 
           {/* Tab 0: AI Verification */}
-          {tab === 0 && <ComplianceWorkflow />}
+          {tab === 0 && <div className="p-4"><p>Compliance verification data here</p></div>}
 
           {/* Tab 1: Cert Matrix */}
           {tab === 1 && (
