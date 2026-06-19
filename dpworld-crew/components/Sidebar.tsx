@@ -57,7 +57,7 @@ export default function Sidebar() {
       {/* Footer */}
       <div className="px-5 py-4" style={{ borderTop: "1px solid #D1E0F0" }}>
         <div className="text-xs font-semibold" style={{ color: "#003D7A", letterSpacing: "0.04em" }}>FLEET OPS v1.0</div>
-        <div className="text-xs mt-0.5" style={{ color: "#003D7A" }}>© 2025 DP World</div>
+        <div className="text-xs mt-0.5" style={{ color: "#003D7A" }}>© 2026 DP World</div>
       </div>
     </aside>
   );

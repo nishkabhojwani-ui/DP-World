@@ -134,8 +134,8 @@ function mockComplianceCheck(
       status: c.status,
       expiry_date: c.expiry_date,
       days_remaining: Math.round((new Date(String(c.expiry_date)).getTime() - new Date().getTime()) / 86400000),
-      finding: c.status === "expired" ? "EXPIRED — immediate renewal required per STCW Reg I/2" :
-               c.status === "expiring" ? "Expiring within 60 days — schedule renewal" : "Valid",
+      finding: c.status === "expired" ? "EXPIRED - immediate renewal required per STCW Reg I/2" :
+               c.status === "expiring" ? "Expiring within 60 days - schedule renewal" : "Valid",
     })),
     missing_certs: missingCerts,
     rest_hours_summary: {
@@ -151,8 +151,8 @@ function mockComplianceCheck(
     },
     psc_risk_level: expiredCerts.length > 0 ? "HIGH" : expiringCerts.length > 0 ? "MEDIUM" : "LOW",
     action_items: [
-      ...expiredCerts.slice(0, 3).map(c => ({ priority: "HIGH", action: `Renew ${c.cert_type} immediately — expired ${c.expiry_date}`, deadline: "IMMEDIATE" })),
-      ...expiringCerts.slice(0, 2).map(c => ({ priority: "MEDIUM", action: `Schedule renewal for ${c.cert_type} — expires ${c.expiry_date}`, deadline: String(c.expiry_date) })),
+      ...expiredCerts.slice(0, 3).map(c => ({ priority: "HIGH", action: `Renew ${c.cert_type} immediately - expired ${c.expiry_date}`, deadline: "IMMEDIATE" })),
+      ...expiringCerts.slice(0, 2).map(c => ({ priority: "MEDIUM", action: `Schedule renewal for ${c.cert_type} - expires ${c.expiry_date}`, deadline: String(c.expiry_date) })),
       ...(violations.length > 3 ? [{ priority: "MEDIUM", action: "Review rest hour schedule per MLC 2006 Reg 2.3", deadline: "Within 7 days" }] : []),
     ],
     recommendation: expiredCerts.length > 2 ? "IMMEDIATE_RELIEF_REQUIRED" :

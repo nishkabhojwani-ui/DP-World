@@ -25,7 +25,7 @@
         "item": "GMDSS certification current",
         "mandatory": true,
         "status": "PASS",
-        "message": "GMDSS GOC valid until 2025"
+        "message": "GMDSS GOC valid until 2026"
       },
       {
         "id": "item-3",
@@ -33,7 +33,7 @@
         "item": "STCW Basic Safety Training valid",
         "mandatory": true,
         "status": "PASS",
-        "message": "BST current, expires 2025"
+        "message": "BST current, expires 2026"
       },
       {
         "id": "item-4",
@@ -95,7 +95,7 @@
         "item": "Certificate of Competency valid for rank",
         "mandatory": true,
         "status": "PASS",
-        "message": "Chief Officer's CoC Class II valid until 2025"
+        "message": "Chief Officer's CoC Class II valid until 2026"
       },
       {
         "id": "item-2",
@@ -111,7 +111,7 @@
         "item": "STCW Basic Safety Training valid",
         "mandatory": true,
         "status": "PASS",
-        "message": "BST current, expires 2025"
+        "message": "BST current, expires 2026"
       },
       {
         "id": "item-4",

@@ -391,8 +391,8 @@ const SAMPLE_RUNS: ComplianceRun[] = [
     "warn_count": 0,
     "results": [
       {"id": "item-1", "category": "Certifications", "item": "Certificate of Competency valid for rank", "mandatory": true, "status": "PASS", "message": "Captain's CoC Class I valid until 2026"},
-      {"id": "item-2", "category": "Certifications", "item": "GMDSS certification current", "mandatory": true, "status": "PASS", "message": "GMDSS GOC valid until 2025"},
-      {"id": "item-3", "category": "Certifications", "item": "STCW Basic Safety Training valid", "mandatory": true, "status": "PASS", "message": "BST current, expires 2025"},
+      {"id": "item-2", "category": "Certifications", "item": "GMDSS certification current", "mandatory": true, "status": "PASS", "message": "GMDSS GOC valid until 2026"},
+      {"id": "item-3", "category": "Certifications", "item": "STCW Basic Safety Training valid", "mandatory": true, "status": "PASS", "message": "BST current, expires 2026"},
       {"id": "item-4", "category": "Medical", "item": "Medical ENG1 certification valid", "mandatory": true, "status": "PASS", "message": "Medical ENG1 valid until 2024-12-15"},
       {"id": "item-5", "category": "Medical", "item": "Yellow fever vaccination current", "mandatory": false, "status": "PASS", "message": "Yellow fever vaccination valid"},
       {"id": "item-6", "category": "Documentation", "item": "Seaman's book valid", "mandatory": true, "status": "PASS", "message": "CDC book valid and registered"},
