@@ -2,8 +2,13 @@ import { NextResponse } from "next/server";
 import { readSheet, updateRow } from "@/lib/excel";
 
 export async function GET() {
-  const candidates = await readSheet("candidates.xlsx");
-  return NextResponse.json(candidates);
+  try {
+    const candidates = await readSheet("candidates.xlsx");
+    return NextResponse.json(candidates);
+  } catch (err) {
+    console.warn("Failed to read candidates.xlsx:", err);
+    return NextResponse.json([]);
+  }
 }
 
 export async function PATCH(request: Request) {
