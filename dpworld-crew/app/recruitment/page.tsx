@@ -25,15 +25,20 @@ export default function RecruitmentPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetchWithTimeout = (url: string, timeout = 4000) => Promise.race([
+      fetch(url).then(r => r.json()),
+      new Promise((_, reject) => setTimeout(() => reject(new Error("timeout")), timeout)),
+    ]).catch(() => []);
     Promise.all([
-      fetch("/api/requisitions").then(r=>r.json()),
-      fetch("/api/candidates").then(r=>r.json()),
-      fetch("/api/vessels").then(r=>r.json()),
-    ]).then(([r,c,v]) => {
-      setReqs(r); setCandidates(c); setVessels(v);
-      setSelectedReq(r[0] || null);
+      fetchWithTimeout("/api/requisitions"),
+      fetchWithTimeout("/api/candidates"),
+      fetchWithTimeout("/api/vessels"),
+    ]).then(([r, c, v]) => {
+      const reqsData = (r as Requisition[]) || [];
+      setReqs(reqsData); setCandidates((c as Candidate[]) || []); setVessels((v as Vessel[]) || []);
+      setSelectedReq(reqsData[0] || null);
       setLoading(false);
-    });
+    }).catch(() => { setLoading(false); });
   }, []);
 
   const moveStage = async (candidateId: string, newStage: string) => {
